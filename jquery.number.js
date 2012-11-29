@@ -1,5 +1,5 @@
 /**
- * jQuery number plug-in 2.0.0
+ * jQuery number plug-in 2.0.1
  * Copyright 2012, Digital Fusion
  * Licensed under the MIT license.
  * http://teamdf.com/jquery-plugins/license/
@@ -503,8 +503,8 @@
 		
 		// Fix the number, so that it's an actual number.
 		number = (number + '')
-			.replace(new RegExp('[^'+u_dec+'0-9]','g'),'')
-			.replace(new RegExp(u_dec,'g'),'.');
+			.replace(new RegExp(u_dec,'g'),'.')
+			.replace(new RegExp('[^0-9+\-Ee.]','g'),'');
 		
 		var n = !isFinite(+number) ? 0 : +number,
 		    s = '',
