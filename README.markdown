@@ -1,4 +1,4 @@
-jQuery Timepicker Plugin
+jQuery Number Plugin
 ===========================
 ### By Sam Sehnert, [Digital Fusion](http://teamdf.com/) 2012
 
@@ -11,7 +11,7 @@ Requires jQuery 1.6 or greater.
 Documentation
 -------------
 
-See our [jQuery Number Format](http://www.teamdf.com/web/jquery-number-format-redux/196/) article for more information.
+See our [jQuery Number Format article](http://www.teamdf.com/web/jquery-number-format-redux/196/) for more information.
 
 ### Basic number formatting
 
