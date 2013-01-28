@@ -2,13 +2,13 @@
  * jQuery number plug-in 2.0.1
  * Copyright 2012, Digital Fusion
  * Licensed under the MIT license.
- * http://teamdf.com/jquery-plugins/license/
+ * http://opensource.teamdf.com/license/
  *
  * A jQuery plugin which implements a permutation of phpjs.org's number_format to provide
  * simple number formatting, insertion, and as-you-type masking of a number.
  * 
  * @author	Sam Sehnert
- * @docs	http://www.teamdf.com/web/jquery-number-format/178/
+ * @docs	http://www.teamdf.com/web/jquery-number-format-redux/196/
  */
 (function($){
 	
