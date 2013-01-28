@@ -1,6 +1,6 @@
 {
 	"name"			: "df-number-format",
-	"version"		: "2.0.1",
+	"version"		: "2.0.2",
 	"title"			: "jQuery Number Format",
 	"author"		: {
 		"name"	: "Team DF",
@@ -27,9 +27,8 @@
 	],
 	"homepage"		: "https://github.com/teamdf/jquery-number/",
 	"docs"			: "http://www.teamdf.com/web/jquery-number-format-redux/196/",
-	"demo"			: "http://www.teamdf.com/web/jquery-number-format-redux/196/",
 	"files"			: ["jquery.number.js","jquery.number.min.js"],
-	"dependancies"	: {
+	"dependencies"	: {
 		"jquery" : ">1.7.0"
 	},
 	"licenses"		: [
