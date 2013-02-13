@@ -28,7 +28,7 @@
 			var range = this.createTextRange();
 				range.collapse( true );
 				range.moveStart( 'character',	rangeStart );
-				range.moveEnd( 'character',		rangeEnd );
+				range.moveEnd( 'character',		rangeEnd-rangeStart );
 				range.select();
 		}
 		
@@ -49,24 +49,25 @@
 	 */
 	function getSelection( part )
 	{
-		var val = $(this).val(), range,
-			pos	= this.value.length;
+		var pos	= this.value.length;
 		
 		// Work out the selection part.
 		part = ( part.toLowerCase() == 'start' ? 'Start' : 'End' );
 		
-		// If we can use the createTextRange method...
-		if( this.createTextRange ) {
-			
-			range = document.selection.createRange().duplicate();
-			range['move'+part]('character', -val.length);
-			
-			// If there is no text selected.
-			if( range.text == '' )
-			{
-				pos = val.length;
-			}
-			pos = val.lastIndexOf(range.text);
+		if( document.selection ){
+			// The current selection
+			var range = document.selection.createRange(), stored_range, selectionStart, selectionEnd;
+			// We'll use this as a 'dummy'
+			stored_range = range.duplicate();
+			// Select all text
+			//stored_range.moveToElementText( this );
+			stored_range.expand('textedit');
+			// Now move 'dummy' end point to end point of original range
+			stored_range.setEndPoint( 'EndToEnd', range );
+			// Now we can calculate start and end points
+			selectionStart = stored_range.text.length - range.text.length;
+			selectionEnd = selectionStart + range.text.length;
+			return part == 'Start' ? selectionStart : selectionEnd;
 		}
 		
 		else if(typeof(this['selection'+part])!="undefined")
@@ -75,6 +76,52 @@
 		}
 		return pos;
 	}
+	
+	/**
+	 * Substitutions for keydown keycodes.
+	 * Allows conversion from e.which to ascii characters.
+	 */
+	var _keydown = {
+		codes : {
+			188 : 44,
+			109 : 45,
+			190 : 46,
+			191 : 47,
+			192 : 96,
+			220 : 92,
+			222 : 39,
+			221 : 93,
+			219 : 91,
+			173 : 45,
+			187 : 61, //IE Key codes
+			186 : 59, //IE Key codes
+			189 : 45, //IE Key codes
+			110 : 46  //IE Key codes
+        },
+        shifts : {
+			96 : "~",
+			49 : "!",
+			50 : "@",
+			51 : "#",
+			52 : "$",
+			53 : "%",
+			54 : "^",
+			55 : "&",
+			56 : "*",
+			57 : "(",
+			48 : ")",
+			45 : "_",
+			61 : "+",
+			91 : "{",
+			93 : "}",
+			92 : "|",
+			59 : ":",
+			39 : "\"",
+			44 : "<",
+			46 : ">",
+			47 : "?"
+        }
+    }
 	
 	/**
 	 * jQuery number formatter plugin. This will allow you to format numbers on an element.
@@ -90,7 +137,7 @@
 	    dec_point		= (typeof dec_point === 'undefined') ? '.' : dec_point;
 	    
 	    // Work out the unicode character for the decimal placeholder.
-	    var u_dec			= ('\\u'+('0000'+(dec_point.charCodeAt(0).toString(16))).substr(-4)),
+	    var u_dec			= ('\\u'+('0000'+(dec_point.charCodeAt(0).toString(16))).slice(-4)),
 	    	regex_dec_num	= new RegExp('[^'+u_dec+'0-9]','g'),
 	    	regex_dec		= new RegExp(u_dec,'g');
 	    
@@ -117,11 +164,34 @@
 	    				var $this	= $(this),
 	    					data	= $this.data('numFormat'),
 	    					code	= (e.keyCode ? e.keyCode : e.which),
-							chara	= unescape(e.originalEvent.keyIdentifier.replace('U+','%u')),
+							chara	= '', //unescape(e.originalEvent.keyIdentifier.replace('U+','%u')),
 	    					start	= getSelection.apply(this,['start']),
 	    					end		= getSelection.apply(this,['end']),
 	    					val		= '';
 	    					setPos	= false;
+	    				
+	    				if( typeof e.originalEvent.keyIdentifier !== 'undefined' )
+	    				{
+	    					chara = unescape(e.originalEvent.keyIdentifier.replace('U+','%u'));
+	    				}
+	    				else
+	    				{
+	    					//chara = String.fromCharCode(code);
+	    						    					
+					        if (_keydown.codes.hasOwnProperty(code)) {
+					            code = _keydown.codes[code];
+					        }
+					        if (!e.shiftKey && (code >= 65 && code <= 90)){
+					        	code += 32;
+					        } else if (!e.shiftKey && (code >= 69 && code <= 105)){
+					        	code -= 48;
+					        } else if (e.shiftKey && _keydown.shifts.hasOwnProperty(code)){
+					            //get shifted keyCode value
+					            chara = _keydown.shifts[code];
+					        }
+					        
+					        if( chara == '' ) chara = String.fromCharCode(code);
+	    				}
 	    				
 	    				// Stop executing if the user didn't type a number key, a decimal, or a comma.
 	    				if( code !== 8 && chara != dec_point && (code < 48 || code > 57) && (code < 96 || code > 105 ) ) return;
@@ -149,7 +219,7 @@
 	    				// If the start position is before the decimal point,
 	    				// and the user has typed a decimal point, we need to move the caret
 	    				// past the decimal place.
-	    				if( start == this.value.length-decimals-1 && chara == dec_point )
+	    				if( chara == dec_point && start == this.value.length-decimals-1 )
 	    				{
 	    					data.c++;
 	    					data.init = Math.max(0,data.init);
@@ -187,9 +257,9 @@
 	    					
 	    					// If the character preceeding is not already a 0,
 	    					// replace it with one.
-	    					if( this.value.substr(start-1, 1) != '0' )
+	    					if( this.value.slice(start-1, start) != '0' )
 	    					{
-	    						val = this.value.substr(0, start-1) + '0' + this.value.substr(start);
+	    						val = this.value.slice(0, start-1) + '0' + this.value.slice(start);
 	    						$this.val(val.replace(regex_dec_num,'').replace(regex_dec,dec_point));
 	    					}
 	    					
@@ -203,7 +273,7 @@
 	    				// If the delete key was pressed, and the character immediately
 	    				// before the caret is a thousands_separator character, simply
 	    				// step over it.
-	    				else if( code == 8 && this.value.substr(start-1, 1) == thousands_sep )
+	    				else if( code == 8 && this.value.slice(start-1, start) == thousands_sep )
 	    				{
 	    					e.preventDefault();
 	    					data.c--;
@@ -225,11 +295,11 @@
 	    					// replace it with one.
 	    					if( end === this.value.length )
 	    					{
-	    						val = this.value.substr(0, start-1);
+	    						val = this.value.slice(0, start-1);
 	    					}
 	    					else
 	    					{
-	    						val = this.value.substr(0, start)+this.value.substr(start+1);
+	    						val = this.value.slice(0, start)+this.value.slice(start+1);
 	    					}
 	    					
 	    					// Reset the position.
@@ -499,7 +569,7 @@
 		decimals		= !isFinite(+decimals) ? 0 : Math.abs(decimals);
 		
 		// Work out the unicode representation for the decimal place.	
-		var u_dec = ('\\u'+('0000'+(dec_point.charCodeAt(0).toString(16))).substr(-4));
+		var u_dec = ('\\u'+('0000'+(dec_point.charCodeAt(0).toString(16))).slice(-4));
 		
 		// Fix the number, so that it's an actual number.
 		number = (number + '')
