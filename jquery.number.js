@@ -1,5 +1,5 @@
 /**
- * jQuery number plug-in 2.0.3
+ * jQuery number plug-in 2.0.4
  * Copyright 2012, Digital Fusion
  * Licensed under the MIT license.
  * http://opensource.teamdf.com/license/
@@ -495,8 +495,8 @@
 			// Convert to a number.
 			num = +(el.value
 				.replace( data.regex_dec_num, '' )
-				.replace( data.regex_dec, data.dec_point ));
-						
+				.replace( data.regex_dec, '.' ));
+			
 			// If we've got a finite number, return it.
 			// Otherwise, simply return 0.
 			// Return as a string... thats what we're
