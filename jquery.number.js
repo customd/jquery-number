@@ -167,7 +167,7 @@
 							chara	= '', //unescape(e.originalEvent.keyIdentifier.replace('U+','%u')),
 	    					start	= getSelection.apply(this,['start']),
 	    					end		= getSelection.apply(this,['end']),
-	    					val		= '';
+	    					val		= '',
 	    					setPos	= false;
 	    				
 	    				if( typeof e.originalEvent.keyIdentifier !== 'undefined' )
