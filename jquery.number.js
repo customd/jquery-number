@@ -121,7 +121,7 @@
 			46 : ">",
 			47 : "?"
         }
-    }
+    };
 	
 	/**
 	 * jQuery number formatter plugin. This will allow you to format numbers on an element.
@@ -380,7 +380,7 @@
 	    				// Defint $this. It's used twice!.
 	    				var $this		= $(this),
 	    					original	= e.originalEvent,
-	    					val			= null
+	    					val		= null;
 						
 						// Get the text content stream.
 						if (window.clipboardData && window.clipboardData.getData) { // IE
@@ -503,7 +503,7 @@
 			// used to with .val()
 			return ''+( isFinite( num ) ? num : 0 );
 		}
-	}
+	};
 	
 	/**
 	 * A valhook which formats a number when run against an input
@@ -541,7 +541,7 @@
 		{
 			return el.value = $.number( val, data.decimals, data.dec_point, data.thousands_sep )
 		}
-	}
+	};
 	
 	/**
 	 * The (modified) excellent number formatting method from PHPJS.org.
