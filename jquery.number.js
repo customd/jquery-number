@@ -1,5 +1,5 @@
 /**
- * jQuery number plug-in 2.0.4
+ * jQuery number plug-in 2.0.5
  * Copyright 2012, Digital Fusion
  * Licensed under the MIT license.
  * http://opensource.teamdf.com/license/
@@ -194,7 +194,21 @@
 	    				}
 	    				
 	    				// Stop executing if the user didn't type a number key, a decimal, or a comma.
-	    				if( code !== 8 && chara != dec_point && (code < 48 || code > 57) && (code < 96 || code > 105 ) ) return;
+	    				if( code !== 8 && chara != dec_point && (code < 48 || code > 57) && (code < 96 || code > 105 ) )
+	    				{
+	    					if( // Allow control keys to go through... (delete, etc)
+	    						code == 46 || code == 8 || code == 9 || code == 27 || code == 13 || 
+	    						// Allow: Ctrl+A, Ctrl+R
+	    						( (code == 65 || code == 82 ) && ( e.ctrlKey || e.metaKey ) === true ) || 
+	    						// Allow: home, end, left, right
+	    						(code >= 35 && code <= 39)
+							){
+								return;
+							}
+							// But prevent all other keys.
+							e.preventDefault();
+							return false;
+	    				}
 	    				
 	    				// The whole lot has been selected, or if the field is empty, and the character
 	    				if( ( start == 0 && end == this.value.length || $this.val() == 0 ) && !e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1 && chara != 0 )

@@ -1,6 +1,6 @@
 {
 	"name"			: "df-number-format",
-	"version"		: "2.0.4",
+	"version"		: "2.0.5",
 	"title"			: "jQuery Number Format",
 	"author"		: {
 		"name"	: "Team DF",
@@ -22,8 +22,10 @@
 		"currency",
 		"decimal",
 		"separator",
-		"thousands"
-
+		"thousands",
+		"input",
+		"ui",
+		"form"
 	],
 	"homepage"		: "https://github.com/teamdf/jquery-number/",
 	"docs"			: "http://www.teamdf.com/web/jquery-number-format-redux/196/",
