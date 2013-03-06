@@ -170,12 +170,16 @@
 	    					val		= '',
 	    					setPos	= false;
 	    				
-	    				if( typeof e.originalEvent.keyIdentifier !== 'undefined' )
-	    				{
-	    					chara = unescape(e.originalEvent.keyIdentifier.replace('U+','%u'));
-	    				}
-	    				else
-	    				{
+	    				// Webkit (Chrome & Safari) on windows screws up the keyIdentifier detection
+	    				// for numpad characters. I've disabled this for now, because while keyCode munging
+	    				// below is hackish and ugly, it actually works cross browser & platform.
+	    				
+//	    				if( typeof e.originalEvent.keyIdentifier !== 'undefined' )
+//	    				{
+//	    					chara = unescape(e.originalEvent.keyIdentifier.replace('U+','%u'));
+//	    				}
+//	    				else
+//	    				{
 	    					if (_keydown.codes.hasOwnProperty(code)) {
 					            code = _keydown.codes[code];
 					        }
@@ -189,8 +193,8 @@
 					        }
 					        
 					        if( chara == '' ) chara = String.fromCharCode(code);
-	    				}
-	    					    				
+//	    				}
+	    				
 	    				// Stop executing if the user didn't type a number key, a decimal character, or backspace.
 	    				if( code !== 8 && chara != dec_point && !chara.match(/[0-9]/) )
 	    				{
