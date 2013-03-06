@@ -135,7 +135,8 @@
 	    // Enter the default thousands separator, and the decimal placeholder.
 	    thousands_sep	= (typeof thousands_sep === 'undefined') ? ',' : thousands_sep;
 	    dec_point		= (typeof dec_point === 'undefined') ? '.' : dec_point;
-	    
+	    decimals		= (typeof decimals === 'undefined' ) ? 0 : decimals;
+	    	    
 	    // Work out the unicode character for the decimal placeholder.
 	    var u_dec			= ('\\u'+('0000'+(dec_point.charCodeAt(0).toString(16))).slice(-4)),
 	    	regex_dec_num	= new RegExp('[^'+u_dec+'0-9]','g'),
@@ -224,8 +225,8 @@
     						this.value = '';
     						
     						// Reset the cursor position.
-	    					data.init = -1;
-	    					data.c = -(decimals+1);
+	    					data.init = (decimals>0?-1:0);
+	    					data.c = (decimals>0?-(decimals+1):0);
 	    					setSelectionRange.apply(this, [0,0]);
 	    				}
 	    				
@@ -239,7 +240,7 @@
 	    				// If the start position is before the decimal point,
 	    				// and the user has typed a decimal point, we need to move the caret
 	    				// past the decimal place.
-	    				if( chara == dec_point && start == this.value.length-decimals-1 )
+	    				if( decimals > 0 && chara == dec_point && start == this.value.length-decimals-1 )
 	    				{
 	    					data.c++;
 	    					data.init = Math.max(0,data.init);
@@ -259,7 +260,7 @@
 	    				
 	    				// If hitting the delete key, and the cursor is behind a decimal place,
 	    				// we simply move the cursor to the other side of the decimal place.
-	    				else if( code == 8 && start == this.value.length-decimals )
+	    				else if( decimals > 0 && code == 8 && start == this.value.length-decimals )
 	    				{
 	    					e.preventDefault();
 	    					data.c--;
@@ -271,7 +272,7 @@
 	    				// If hitting the delete key, and the cursor is to the right of the decimal
 	    				// (but not directly to the right) we replace the character preceeding the
 	    				// caret with a 0.
-	    				else if( code == 8 && start > this.value.length-decimals )
+	    				else if( decimals > 0 && code == 8 && start > this.value.length-decimals )
 	    				{
 	    					if( this.value === '' ) return;
 	    					
@@ -305,8 +306,9 @@
 	    				// If the caret is to the right of the decimal place, and the user is entering a
 	    				// number, remove the following character before putting in the new one. 
 	    				else if(
+	    					decimals > 0 &&
 	    					start == end &&
-	    					this.value.length > (decimals+1) &&
+	    					this.value.length > decimals+1 &&
 	    					start > this.value.length-decimals-1 && isFinite(+chara) &&
 		    				!e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1
 	    				)
@@ -330,6 +332,7 @@
 	    				// If we need to re-position the characters.
 	    				if( setPos !== false )
 	    				{
+	    					console.log('Setpos keydown: ', setPos );
 	    					setSelectionRange.apply(this, [setPos, setPos]);
 	    				}
 	    				
@@ -360,28 +363,33 @@
 	    				// Re-format the textarea.
 	    				$this.val($this.val());
 	    				
-	    				// If we haven't marked this item as 'initialised'
-	    				// then do so now. It means we should place the caret just 
-	    				// before the decimal. This will never be un-initialised before
-	    				// the decimal character itself is entered.
-	    				if( data.init < 1 )
+	    				if( decimals > 0 )
 	    				{
-	    					start		= this.value.length-decimals-( data.init < 0 ? 1 : 0 );
-	    					data.c		= start-this.value.length;
-	    					data.init	= 1;
-	    					
-	    					$this.data('numFormat', data);
+		    				// If we haven't marked this item as 'initialised'
+		    				// then do so now. It means we should place the caret just 
+		    				// before the decimal. This will never be un-initialised before
+		    				// the decimal character itself is entered.
+		    				if( data.init < 1 )
+		    				{
+		    					start		= this.value.length-decimals-( data.init < 0 ? 1 : 0 );
+		    					data.c		= start-this.value.length;
+		    					data.init	= 1;
+		    					
+		    					$this.data('numFormat', data);
+		    				}
+		    				
+		    				// Increase the cursor position if the caret is to the right
+		    				// of the decimal place, and the character pressed isn't the delete key.
+		    				else if( start > this.value.length-decimals && code != 8 )
+		    				{
+		    					data.c++;
+		    					
+		    					// Store the data, now that it's changed.
+		    					$this.data('numFormat', data);
+		    				}
 	    				}
 	    				
-	    				// Increase the cursor position if the caret is to the right
-	    				// of the decimal place, and the character pressed isn't the delete key.
-	    				else if( start > this.value.length-decimals && code != 8 )
-	    				{
-	    					data.c++;
-	    					
-	    					// Store the data, now that it's changed.
-	    					$this.data('numFormat', data);
-	    				}
+	    				console.log( 'Setting pos: ', start, decimals, this.value.length + data.c, this.value.length, data.c );
 	    				
 	    				// Set the selection position.
 	    				setPos = this.value.length+data.c;
