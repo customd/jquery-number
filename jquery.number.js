@@ -1,5 +1,5 @@
 /**
- * jQuery number plug-in 2.0.7
+ * jQuery number plug-in 2.0.6
  * Copyright 2012, Digital Fusion
  * Licensed under the MIT license.
  * http://opensource.teamdf.com/license/
@@ -332,7 +332,7 @@
 	    				// If we need to re-position the characters.
 	    				if( setPos !== false )
 	    				{
-	    					//console.log('Setpos keydown: ', setPos );
+	    					console.log('Setpos keydown: ', setPos );
 	    					setSelectionRange.apply(this, [setPos, setPos]);
 	    				}
 	    				
@@ -389,7 +389,7 @@
 		    				}
 	    				}
 	    				
-	    				//console.log( 'Setting pos: ', start, decimals, this.value.length + data.c, this.value.length, data.c );
+	    				console.log( 'Setting pos: ', start, decimals, this.value.length + data.c, this.value.length, data.c );
 	    				
 	    				// Set the selection position.
 	    				setPos = this.value.length+data.c;
