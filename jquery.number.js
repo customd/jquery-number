@@ -195,6 +195,9 @@
 					        
 					        if( chara == '' ) chara = String.fromCharCode(code);
 //	    				}
+						
+
+			
 	    				
 	    				// Stop executing if the user didn't type a number key, a decimal character, or backspace.
 	    				if( code !== 8 && chara != dec_point && !chara.match(/[0-9]/) )
@@ -205,6 +208,8 @@
 	    						key == 46 || key == 8 || key == 9 || key == 27 || key == 13 || 
 	    						// Allow: Ctrl+A, Ctrl+R
 	    						( (key == 65 || key == 82 ) && ( e.ctrlKey || e.metaKey ) === true ) || 
+	    						// Allow: Ctrl+V, Ctrl+C
+	    						( (key == 86 || key == 67 ) && ( e.ctrlKey || e.metaKey ) === true ) || 
 	    						// Allow: home, end, left, right
 	    						( (key >= 35 && key <= 39) )
 							){
@@ -596,11 +601,13 @@
 		dec_point		= (typeof dec_point === 'undefined') ? '.' : dec_point;
 		decimals		= !isFinite(+decimals) ? 0 : Math.abs(decimals);
 		
-		// Work out the unicode representation for the decimal place.	
+		// Work out the unicode representation for the decimal place and thousand sep.	
 		var u_dec = ('\\u'+('0000'+(dec_point.charCodeAt(0).toString(16))).slice(-4));
+		var u_sep = ('\\u'+('0000'+(thousands_sep.charCodeAt(0).toString(16))).slice(-4));
 		
 		// Fix the number, so that it's an actual number.
 		number = (number + '')
+			.replace(new RegExp(u_sep,'g'),'')
 			.replace(new RegExp(u_dec,'g'),'.')
 			.replace(new RegExp('[^0-9+\-Ee.]','g'),'');
 		
