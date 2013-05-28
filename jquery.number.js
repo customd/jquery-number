@@ -475,13 +475,13 @@
 	var origHookGet = null, origHookSet = null;
 	 
 	// Check if a text valHook already exists.
-	if( $.valHooks.text )
+	if( $.isPlainObject( $.valHooks.text ) )
 	{
 	    // Preserve the original valhook function
 	    // we'll call this for values we're not 
 	    // explicitly handling.
-	    origHookGet = $.valHooks.text.get;
-	    origHookSet = $.valHooks.text.set;
+	    if( $.isFunction( $.valHooks.text.get ) ) origHookGet = $.valHooks.text.get;
+	    if( $.isFunction( $.valHooks.text.set ) ) origHookSet = $.valHooks.text.set;
 	}
 	else
 	{
@@ -557,7 +557,8 @@
 		// Does this element have our data field?
 		if( !data )
 		{
-		    // Check if the valhook function already existed
+		    
+		    // Check if the valhook function already exists
 		    if( $.isFunction( origHookSet ) )
 		    {
 		        // There was, so go ahead and call it
@@ -572,7 +573,8 @@
 		}
 		else
 		{
-			return el.value = $.number( val, data.decimals, data.dec_point, data.thousands_sep )
+			// Otherwise, don't worry about other valhooks, just run ours.
+			return el.value = $.number( val, data.decimals, data.dec_point, data.thousands_sep );
 		}
 	};
 	

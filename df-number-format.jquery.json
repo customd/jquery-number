@@ -13,13 +13,18 @@
 			"email"	: "sam@teamdf.com"
 		}
 	],
-	"description"	: "Easily format numbers for display use. Replace numbers inline in a document, or return a formatted number for other uses. Even enables seamless number formatting in input fields as-you-type.",
+	"description"	: "Easily format numbers for display use. Replace numbers inline in a document, or return a formatted number for other uses. Even enables seamless number formatting in input fields as-you-type. Currency formatting is easy too—simply add a currency placeholder in the label of your form element, and set the appropriate format.",
 	"keywords"		: [
 		"number",
+		"numeric",
 		"format",
 		"mask",
 		"formatting",
 		"currency",
+		"money",
+		"dollar",
+		"euro",
+		"pound",
 		"decimal",
 		"separator",
 		"thousands",

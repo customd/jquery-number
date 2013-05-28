@@ -3,7 +3,7 @@
 	<head>
 		<title>jQuery Number Format Plugin</title>
 		
-		<script type="text/javascript" src="http://code.jquery.com/jquery.min.js"></script>
+		<script type="text/javascript" src="http://code.jquery.com/jquery.js"></script>
 		<script type="text/javascript" src="http://www.teamdf.com/jquery-plugins/resources/javascripts/prettify.js"></script>
 		<script type="text/javascript" src="http://www.teamdf.com/jquery-plugins/resources/javascripts/docs.js"></script>
 		<script type="text/javascript" src="../jquery.number.js"></script>
@@ -15,6 +15,19 @@
 			
 			$(function(){
 				// Set up the number formatting.
+				
+				$('#number_container').slideDown('fast');
+				
+				$('#price').on('change',function(){
+					console.log('Change event.');
+					var val = $('#price').val();
+					$('#the_number').text( val !== '' ? val : '(empty)' );
+				});
+				
+				$('#price').change(function(){
+					console.log('Second change event...');
+				});
+				
 				$('#price').number( true, 2 );
 				
 				
@@ -23,7 +36,6 @@
 					
 					var val = $('#price').val();
 					
-					$('#number_container').slideDown('fast');
 					$('#the_number').text( val !== '' ? val : '(empty)' );
 				});
 			});
