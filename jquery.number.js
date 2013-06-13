@@ -367,7 +367,7 @@
 	    				
 	    				// Re-format the textarea.
 	    				$this.val($this.val());
-	    				
+
 	    				if( decimals > 0 )
 	    				{
 		    				// If we haven't marked this item as 'initialised'
@@ -529,7 +529,7 @@
 			num = +(el.value
 				.replace( data.regex_dec_num, '' )
 				.replace( data.regex_dec, '.' ));
-			
+		
 			// If we've got a finite number, return it.
 			// Otherwise, simply return 0.
 			// Return as a string... thats what we're
@@ -597,7 +597,6 @@
 	 * @return string : The formatted number as a string.
 	 */
 	$.number = function( number, decimals, dec_point, thousands_sep ){
-		
 		// Set the default values here, instead so we can use them in the replace below.
 		thousands_sep	= (typeof thousands_sep === 'undefined') ? ',' : thousands_sep;
 		dec_point		= (typeof dec_point === 'undefined') ? '.' : dec_point;
@@ -609,6 +608,7 @@
 		
 		// Fix the number, so that it's an actual number.
 		number = (number + '')
+			.replace('\.', dec_point) // because the number if passed in as a float (having . as decimal point per definition) we need to replace this with the passed in decimal point character
 			.replace(new RegExp(u_sep,'g'),'')
 			.replace(new RegExp(u_dec,'g'),'.')
 			.replace(new RegExp('[^0-9+\-Ee.]','g'),'');
