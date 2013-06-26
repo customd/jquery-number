@@ -223,7 +223,7 @@
 	    				//console.log('Continuing on: ', code, chara);
 	    				
 	    				// The whole lot has been selected, or if the field is empty, and the character
-	    				if( ( start == 0 && end == this.value.length || $this.val() == 0 ) && !e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1 && chara != 0 )
+	    				if( ( start == 0 && end == this.value.length || $this.val() === 0 ) && !e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1 && chara != 0 )
 	    				{
 	    					// Blank out the field, but only if the data object has already been instanciated.
     						start = end = 1;
