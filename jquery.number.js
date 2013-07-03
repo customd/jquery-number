@@ -96,8 +96,7 @@
 			173 : 45,
 			187 : 61, //IE Key codes
 			186 : 59, //IE Key codes
-			189 : 45, //IE Key codes
-			110 : 46  //IE Key codes
+			189 : 45 //IE Key codes
         },
         shifts : {
 			96 : "~",
@@ -193,7 +192,8 @@
 					            //get shifted keyCode value
 					            chara = _keydown.shifts[code];
 					        }
-					        
+                            // decimal point on the numpad
+					        if( code === 110 ) chara = dec_point;
 					        if( chara == '' ) chara = String.fromCharCode(code);
 //	    				}
 						
@@ -201,7 +201,7 @@
 			
 	    				
 	    				// Stop executing if the user didn't type a number key, a decimal character, or backspace.
-                        if( code !== 46 && code !== 8 && chara != dec_point && !chara.match(/[0-9]/) )
+                        if( code !== 46 && code !== 8 && code !== 110 && chara != dec_point && !chara.match(/[0-9]/) )
 	    				{
 	    					// We need the original keycode now...
 	    					var key = (e.keyCode ? e.keyCode : e.which);
