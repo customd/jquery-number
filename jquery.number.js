@@ -11,6 +11,7 @@
  * @docs	http://www.teamdf.com/web/jquery-number-format-redux/196/
  */
 (function($){
+"use strict";
 	
 	/**
 	 * Method for selecting a range of characters in an input/textarea.
@@ -543,7 +544,7 @@
 	 * which has been tagged by the number formatter.
 	 *
 	 * @param object el		: The raw DOM element (input element).
-	 * @param float			: The number to set into the value field.
+	 * @param float	val		: The number to set into the value field.
 	 *
 	 * @return mixed : Returns the value that was written to the element,
 	 *				   or undefined to let jQuery handle it normally. 
