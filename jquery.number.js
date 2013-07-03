@@ -206,7 +206,7 @@
 	    					// We need the original keycode now...
 	    					var key = (e.keyCode ? e.keyCode : e.which);
 	    					if( // Allow control keys to go through... (delete, etc)
-	    						key == 46 || key == 8 || key == 9 || key == 27 || key == 13 || 
+	    						key == 46 || key == 8 || key == 9 || key == 27 || key == 13 ||
 	    						// Allow: Ctrl+A, Ctrl+R
 	    						( (key == 65 || key == 82 ) && ( e.ctrlKey || e.metaKey ) === true ) || 
 	    						// Allow: Ctrl+V, Ctrl+C
@@ -386,7 +386,6 @@
 	    					code	= (e.keyCode ? e.keyCode : e.which),
 	    					start	= getSelection.apply(this,['start']),
 	    					setPos;
-	    				    				    			
 	    				// Stop executing if the user didn't type a number key, a decimal, or a comma.
                         if( this.value === '' || (code < 48 || code > 57) && (code < 96 || code > 105 ) && code !== 8 && code !== 46 ) return;
 	    				
@@ -404,7 +403,7 @@
                         if( typeof data.init === 'boolean' && this.value.length > 0)
                         {
                             data.init	= 1;
-                            data.c = start - this.value.length -1;
+                            data.c = start - this.value.length - 1;
                         }
 
 	    				if( decimals > 0 )
@@ -422,7 +421,6 @@
 		    					
 		    					$this.data('numFormat', data);
 		    				}
-		    				
 		    				// Increase the cursor position if the caret is to the right
                             // of the decimal place, and the character pressed isn't the backspace key.
                             else if( start > this.value.length - decimals && code != 8 && code != 46 )
@@ -437,16 +435,13 @@
                                 if( this.value.slice(start-1, start) == thousands_sep )
                                 {
                                     data.c++;
-	    				}
+	    				        }
                             }
                         }
+                        // cardinal number
                         else if( code == 46)
                         {
                             if( this.value.slice(start-1, start) == thousands_sep )
-                            {
-                                data.c++;
-                            }
-                            else
                             {
                                 data.c++;
                             }
