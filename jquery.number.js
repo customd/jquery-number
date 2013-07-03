@@ -84,19 +84,19 @@
 	 */
 	var _keydown = {
 		codes : {
-			188 : 44,
-			109 : 45,
-			190 : 46,
-			191 : 47,
-			192 : 96,
-			220 : 92,
-			222 : 39,
-			221 : 93,
-			219 : 91,
-			173 : 45,
+			188 : 44, //comma
+			109 : 45, //numpad minus
+			190 : 46, //dot
+			191 : 47, //slash
+			192 : 96, //`
+			220 : 92, // back slash
+			222 : 39, //apostroph
+			221 : 93, // ]
+			219 : 91, // [
+			173 : 45, //minus
 			187 : 61, //IE Key codes
 			186 : 59, //IE Key codes
-			189 : 45 //IE Key codes
+			189 : 45 //minus IE Key codes
         },
         shifts : {
 			96 : "~",
@@ -192,13 +192,13 @@
 					            //get shifted keyCode value
 					            chara = _keydown.shifts[code];
 					        }
-                            // decimal point on the numpad
-					        if( code === 110 ) chara = dec_point;
-					        if( chara == '' ) chara = String.fromCharCode(code);
-//	    				}
-						
 
-			
+					        if( e.keyCode === 110 ) chara = dec_point; // Numpad dot key
+					        if( chara == '' ) chara = String.fromCharCode(code);
+                            if( e.keyCode === 46 ) chara = ''; // Delete key
+//	    				}
+
+
 	    				
 	    				// Stop executing if the user didn't type a number key, a decimal character, or backspace.
                         if( code !== 46 && code !== 8 && code !== 110 && chara != dec_point && !chara.match(/[0-9]/) )
@@ -221,8 +221,7 @@
 							return false;
 	    				}
 	    				
-	    				//console.log('Continuing on: ', code, chara);
-	    				
+
 	    				// The whole lot has been selected, or if the field is empty, and the character
 	    				if( ( start == 0 && end == this.value.length || $this.val() === 0 ) && !e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1 && chara != 0 )
 	    				{
@@ -239,9 +238,10 @@
                                 start = end = 2;
                                 setSelectionRange.apply(this, [2,2]);
                             }
-                            else{
-	    					setSelectionRange.apply(this, [0,0]);
-	    				}
+                            else
+                            {
+	    					    setSelectionRange.apply(this, [0,0]);
+	    				    }
                         }
 
 	    				// Otherwise, we need to reset the caret position
@@ -250,7 +250,7 @@
 	    				{
 	    					data.c = end-this.value.length;
 	    				}
-	    				
+
 	    				// If the start position is before the decimal point,
 	    				// and the user has typed a decimal point, we need to move the caret
 	    				// past the decimal place.
@@ -316,10 +316,7 @@
 	    					// Set the selection position.
 	    					setPos = this.value.length+data.c;
 	    				}
-	    				
-                        // if pressed Delete key
-                        //else if (code == 46 && this.value.slice(start, start+1) == thousands_sep) {
-                        else if( code == 46 )
+                        else if( code == 46 ) // pressed Delete key
                         {
                             if( this.value.slice(start, start+1) == thousands_sep )
                             {
@@ -403,7 +400,11 @@
                         if( typeof data.init === 'boolean' && this.value.length > 0)
                         {
                             data.init	= 1;
-                            data.c = start - this.value.length - 1;
+                            data.c = start - this.value.length;
+                            if( decimals > 0 )
+                            {
+                                data.c--;
+                            }
                         }
 
 	    				if( decimals > 0 )
@@ -421,6 +422,13 @@
 		    					
 		    					$this.data('numFormat', data);
 		    				}
+                            // if enter '0'
+                            else if( typeof data.init === 'boolean' )
+                            {
+                                data.init	= 1;
+                                data.c =-decimals -1;
+                            }
+
 		    				// Increase the cursor position if the caret is to the right
                             // of the decimal place, and the character pressed isn't the backspace key.
                             else if( start > this.value.length - decimals && code != 8 && code != 46 )
@@ -432,7 +440,7 @@
 		    				}
                             else if( code == 46 && start < this.value.length - decimals )
                             {
-                                if( this.value.slice(start-1, start) == thousands_sep )
+                                if( this.value.slice(start-1, start) != thousands_sep )
                                 {
                                     data.c++;
 	    				        }
