@@ -220,10 +220,9 @@
 							e.preventDefault();
 							return false;
 	    				}
-	    				
 
 	    				// The whole lot has been selected, or if the field is empty, and the character
-	    				if( ( start == 0 && end == this.value.length || $this.val() === 0 ) && !e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1 && chara != 0 )
+	    				if( ( start == 0 && end == this.value.length || $this.val() === 0 ) && !e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1  )
 	    				{
 	    					// Blank out the field, but only if the data object has already been instanciated.
     						start = end = 1;
@@ -232,9 +231,10 @@
     						// Reset the cursor position.
 	    					data.init = (decimals>0?-1:0);
 	    					data.c = (decimals>0?-(decimals+1):0);
-                            if( chara == dec_point )
+
+                            if( chara == dec_point && decimals>0 )
                             {
-                                this.value = '0'+ dec_point + '0';
+                                this.value = '0'+ dec_point + new Array(decimals+1).join('0');
                                 start = end = 2;
                                 setSelectionRange.apply(this, [2,2]);
                             }
@@ -385,10 +385,10 @@
 	    					setPos;
 	    				// Stop executing if the user didn't type a number key, a decimal, or a comma.
                         if( this.value === '' || (code < 48 || code > 57) && (code < 96 || code > 105 ) && code !== 8 && code !== 46 ) return;
-	    				
-                        if( typeof data.init === 'boolean' && this.value == 0)
+
+                        if( typeof data.init === 'boolean' && $this.val() === 0)
                         {
-                            data.init	= 1;
+                            data.init = (decimals>0?-1:0);
                             if( decimals > 0 )
                             {
                                 data.c =-decimals -1;
@@ -399,23 +399,22 @@
 
                         if( typeof data.init === 'boolean' && this.value.length > 0)
                         {
-                            data.init	= 1;
+                            data.init = (decimals>0?1:0);
                             data.c = start - this.value.length;
-                            if( decimals > 0 )
+                            if( decimals > 0 && start > 0 )
                             {
                                 data.c--;
                             }
                         }
-
 	    				if( decimals > 0 )
 	    				{
 		    				// If we haven't marked this item as 'initialised'
 		    				// then do so now. It means we should place the caret just 
 		    				// before the decimal. This will never be un-initialised before
 		    				// the decimal character itself is entered.
-
                             if( typeof data.init === 'number' && data.init < 1 )
 		    				{
+
 		    					start		= this.value.length-decimals-( data.init < 0 ? 1 : 0 );
 		    					data.c		= start-this.value.length;
 		    					data.init	= 1;
@@ -438,7 +437,7 @@
 		    					// Store the data, now that it's changed.
 		    					$this.data('numFormat', data);
 		    				}
-                            else if( code == 46 && start < this.value.length - decimals )
+                            else if( code == 46 && start < this.value.length - decimals && start > 0 )
                             {
                                 if( this.value.slice(start-1, start) != thousands_sep )
                                 {
@@ -446,13 +445,10 @@
 	    				        }
                             }
                         }
-                        // cardinal number
-                        else if( code == 46)
+                        // integer number
+                        else if( code == 46 && this.value.slice(start-1, start) !== thousands_sep && start > 0 )
                         {
-                            if( this.value.slice(start-1, start) == thousands_sep )
-                            {
-                                data.c++;
-                            }
+                            data.c++;
                         }
 	    				
 	    				// Set the selection position.
