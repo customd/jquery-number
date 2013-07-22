@@ -170,7 +170,7 @@
 	    					end		= getSelection.apply(this,['end']),
 	    					val		= '',
 	    					setPos	= false;
-	    				
+
 	    				// Webkit (Chrome & Safari) on windows screws up the keyIdentifier detection
 	    				// for numpad characters. I've disabled this for now, because while keyCode munging
 	    				// below is hackish and ugly, it actually works cross browser & platform.
@@ -222,7 +222,7 @@
 	    				}
 
 	    				// The whole lot has been selected, or if the field is empty, and the character
-	    				if( ( start == 0 && end == this.value.length || $this.val() === 0 ) && !e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1  )
+	    				if( start == 0 && end == this.value.length || $this.val() === 0  && !e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1 )
 	    				{
 	    					// Blank out the field, but only if the data object has already been instanciated.
     						start = end = 1;
@@ -359,7 +359,6 @@
 	    				// If we need to re-position the characters.
 	    				if( setPos !== false )
 	    				{
-	    					//console.log('Setpos keydown: ', setPos );
 	    					setSelectionRange.apply(this, [setPos, setPos]);
 	    				}
 	    				
