@@ -316,17 +316,20 @@
 	    					// Set the selection position.
 	    					setPos = this.value.length+data.c;
 	    				}
-                        else if( code == 46 ) // pressed Delete key
+                        else if( 46 === code ) // pressed Delete key
                         {
-                            if( this.value.slice(start, start+1) == thousands_sep )
+                            if ( end === start )
                             {
-                                e.preventDefault();
-                                data.c++;
-                                setPos = this.value.length + data.c;
-                            } else
-                            {
-                                // Set the selection position.
-                                setPos = this.value.length + data.c;
+                                if( this.value.slice(start, start+1) == thousands_sep )
+                                {
+                                    e.preventDefault();
+                                    data.c++;
+                                    setPos = this.value.length + data.c;
+                                } else
+                                {
+                                    // Set the selection position.
+                                    setPos = this.value.length + data.c;
+                                }
                             }
                         }
 
