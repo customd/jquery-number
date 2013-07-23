@@ -11,6 +11,7 @@
  * @docs	http://www.teamdf.com/web/jquery-number-format-redux/196/
  */
 (function($){
+"use strict";
 	
 	/**
 	 * Method for selecting a range of characters in an input/textarea.
@@ -83,20 +84,19 @@
 	 */
 	var _keydown = {
 		codes : {
-			188 : 44,
-			109 : 45,
-			190 : 46,
-			191 : 47,
-			192 : 96,
-			220 : 92,
-			222 : 39,
-			221 : 93,
-			219 : 91,
-			173 : 45,
+			188 : 44, //comma
+			109 : 45, //numpad minus
+			190 : 46, //dot
+			191 : 47, //slash
+			192 : 96, //`
+			220 : 92, // back slash
+			222 : 39, //apostroph
+			221 : 93, // ]
+			219 : 91, // [
+			173 : 45, //minus
 			187 : 61, //IE Key codes
 			186 : 59, //IE Key codes
-			189 : 45, //IE Key codes
-			110 : 46  //IE Key codes
+			189 : 45 //minus IE Key codes
         },
         shifts : {
 			96 : "~",
@@ -170,7 +170,7 @@
 	    					end		= getSelection.apply(this,['end']),
 	    					val		= '',
 	    					setPos	= false;
-	    				
+
 	    				// Webkit (Chrome & Safari) on windows screws up the keyIdentifier detection
 	    				// for numpad characters. I've disabled this for now, because while keyCode munging
 	    				// below is hackish and ugly, it actually works cross browser & platform.
@@ -192,20 +192,21 @@
 					            //get shifted keyCode value
 					            chara = _keydown.shifts[code];
 					        }
-					        
-					        if( chara == '' ) chara = String.fromCharCode(code);
-//	    				}
-						
 
-			
+					        if( e.keyCode === 110 ) chara = dec_point; // Numpad dot key
+					        if( chara == '' ) chara = String.fromCharCode(code);
+                            if( e.keyCode === 46 ) chara = ''; // Delete key
+//	    				}
+
+
 	    				
 	    				// Stop executing if the user didn't type a number key, a decimal character, or backspace.
-	    				if( code !== 8 && chara != dec_point && !chara.match(/[0-9]/) )
+                        if( code !== 46 && code !== 8 && code !== 110 && chara != dec_point && !chara.match(/[0-9]/) )
 	    				{
 	    					// We need the original keycode now...
 	    					var key = (e.keyCode ? e.keyCode : e.which);
 	    					if( // Allow control keys to go through... (delete, etc)
-	    						key == 46 || key == 8 || key == 9 || key == 27 || key == 13 || 
+	    						key == 46 || key == 8 || key == 9 || key == 27 || key == 13 ||
 	    						// Allow: Ctrl+A, Ctrl+R
 	    						( (key == 65 || key == 82 ) && ( e.ctrlKey || e.metaKey ) === true ) || 
 	    						// Allow: Ctrl+V, Ctrl+C
@@ -219,11 +220,9 @@
 							e.preventDefault();
 							return false;
 	    				}
-	    				
-	    				//console.log('Continuing on: ', code, chara);
-	    				
+
 	    				// The whole lot has been selected, or if the field is empty, and the character
-	    				if( ( start == 0 && end == this.value.length || $this.val() == 0 ) && !e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1 && chara != 0 )
+	    				if( start == 0 && end == this.value.length || $this.val() === 0  && !e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1 )
 	    				{
 	    					// Blank out the field, but only if the data object has already been instanciated.
     						start = end = 1;
@@ -232,16 +231,26 @@
     						// Reset the cursor position.
 	    					data.init = (decimals>0?-1:0);
 	    					data.c = (decimals>0?-(decimals+1):0);
-	    					setSelectionRange.apply(this, [0,0]);
-	    				}
-	    				
+
+                            if( chara == dec_point && decimals>0 )
+                            {
+                                this.value = '0'+ dec_point + new Array(decimals+1).join('0');
+                                start = end = 2;
+                                setSelectionRange.apply(this, [2,2]);
+                            }
+                            else
+                            {
+	    					    setSelectionRange.apply(this, [0,0]);
+	    				    }
+                        }
+
 	    				// Otherwise, we need to reset the caret position
 	    				// based on the users selection.
 	    				else
 	    				{
 	    					data.c = end-this.value.length;
 	    				}
-	    				
+
 	    				// If the start position is before the decimal point,
 	    				// and the user has typed a decimal point, we need to move the caret
 	    				// past the decimal place.
@@ -307,7 +316,23 @@
 	    					// Set the selection position.
 	    					setPos = this.value.length+data.c;
 	    				}
-	    				
+                        else if( 46 === code ) // pressed Delete key
+                        {
+                            if ( end === start )
+                            {
+                                if( this.value.slice(start, start+1) == thousands_sep )
+                                {
+                                    e.preventDefault();
+                                    data.c++;
+                                    setPos = this.value.length + data.c;
+                                } else
+                                {
+                                    // Set the selection position.
+                                    setPos = this.value.length + data.c;
+                                }
+                            }
+                        }
+
 	    				// If the caret is to the right of the decimal place, and the user is entering a
 	    				// number, remove the following character before putting in the new one. 
 	    				else if(
@@ -337,7 +362,6 @@
 	    				// If we need to re-position the characters.
 	    				if( setPos !== false )
 	    				{
-	    					//console.log('Setpos keydown: ', setPos );
 	    					setSelectionRange.apply(this, [setPos, setPos]);
 	    				}
 	    				
@@ -361,40 +385,73 @@
 	    					code	= (e.keyCode ? e.keyCode : e.which),
 	    					start	= getSelection.apply(this,['start']),
 	    					setPos;
-	    				    				    			
 	    				// Stop executing if the user didn't type a number key, a decimal, or a comma.
-	    				if( this.value === '' || (code < 48 || code > 57) && (code < 96 || code > 105 ) && code !== 8 ) return;
-	    				
+                        if( this.value === '' || (code < 48 || code > 57) && (code < 96 || code > 105 ) && code !== 8 && code !== 46 ) return;
+
+                        if( typeof data.init === 'boolean' && $this.val() === 0)
+                        {
+                            data.init = (decimals>0?-1:0);
+                            if( decimals > 0 )
+                            {
+                                data.c =-decimals -1;
+                            }
+                        }
 	    				// Re-format the textarea.
 	    				$this.val($this.val());
 
+                        if( typeof data.init === 'boolean' && this.value.length > 0)
+                        {
+                            data.init = (decimals>0?1:0);
+                            data.c = start - this.value.length;
+                            if( decimals > 0 && start > 0 )
+                            {
+                                data.c--;
+                            }
+                        }
 	    				if( decimals > 0 )
 	    				{
 		    				// If we haven't marked this item as 'initialised'
 		    				// then do so now. It means we should place the caret just 
 		    				// before the decimal. This will never be un-initialised before
 		    				// the decimal character itself is entered.
-		    				if( data.init < 1 )
+                            if( typeof data.init === 'number' && data.init < 1 )
 		    				{
+
 		    					start		= this.value.length-decimals-( data.init < 0 ? 1 : 0 );
 		    					data.c		= start-this.value.length;
 		    					data.init	= 1;
 		    					
 		    					$this.data('numFormat', data);
 		    				}
-		    				
+                            // if enter '0'
+                            else if( typeof data.init === 'boolean' )
+                            {
+                                data.init	= 1;
+                                data.c =-decimals -1;
+                            }
+
 		    				// Increase the cursor position if the caret is to the right
-		    				// of the decimal place, and the character pressed isn't the delete key.
-		    				else if( start > this.value.length-decimals && code != 8 )
+                            // of the decimal place, and the character pressed isn't the backspace key.
+                            else if( start > this.value.length - decimals && code != 8 && code != 46 )
 		    				{
 		    					data.c++;
 		    					
 		    					// Store the data, now that it's changed.
 		    					$this.data('numFormat', data);
 		    				}
-	    				}
-	    				
-	    				//console.log( 'Setting pos: ', start, decimals, this.value.length + data.c, this.value.length, data.c );
+                            else if( code == 46 && start < this.value.length - decimals && start > 0 )
+                            {
+                                if( this.value.slice(start-1, start) != thousands_sep )
+                                {
+                                    data.c++;
+	    				        }
+                            }
+                        }
+                        // integer number
+                        else if( code == 46 && this.value.slice(start-1, start) !== thousands_sep && start > 0 )
+                        {
+                            data.c++;
+                        }
 	    				
 	    				// Set the selection position.
 	    				setPos = this.value.length+data.c;
@@ -543,7 +600,7 @@
 	 * which has been tagged by the number formatter.
 	 *
 	 * @param object el		: The raw DOM element (input element).
-	 * @param float			: The number to set into the value field.
+	 * @param float	val		: The number to set into the value field.
 	 *
 	 * @return mixed : Returns the value that was written to the element,
 	 *				   or undefined to let jQuery handle it normally. 
