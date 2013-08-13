@@ -1,5 +1,5 @@
 /**
- * jQuery number plug-in 2.1.0
+ * jQuery number plug-in 2.1.1
  * Copyright 2012, Digital Fusion
  * Licensed under the MIT license.
  * http://opensource.teamdf.com/license/
@@ -220,19 +220,34 @@
 							return false;
 	    				}
 	    				
-	    				//console.log('Continuing on: ', code, chara);
-	    				
-	    				// The whole lot has been selected, or if the field is empty, and the character
-	    				if( ( start == 0 && end == this.value.length || $this.val() == 0 ) && !e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1 && chara != 0 )
+	    				// The whole lot has been selected, or if the field is empty...
+	    				if( start == 0 && end == this.value.length || $this.val() == 0 )
 	    				{
-	    					// Blank out the field, but only if the data object has already been instanciated.
-    						start = end = 1;
-    						this.value = '';
-    						
-    						// Reset the cursor position.
-	    					data.init = (decimals>0?-1:0);
-	    					data.c = (decimals>0?-(decimals+1):0);
-	    					setSelectionRange.apply(this, [0,0]);
+	    					if( code === 8 )
+	    					{
+		    					// Blank out the field, but only if the data object has already been instanciated.
+	    						start = end = 1;
+	    						this.value = '';
+	    						
+	    						// Reset the cursor position.
+		    					data.init = (decimals>0?-1:0);
+		    					data.c = (decimals>0?-(decimals+1):0);
+		    					setSelectionRange.apply(this, [0,0]);
+		    				}
+		    				else if( chara === dec_point )
+		    				{
+		    					start = end = 1;
+		    					this.value = '0.0';
+		    					
+		    					// Reset the cursor position.
+		    					data.init = (decimals>0?1:0);
+		    					data.c = (decimals>0?-(decimals+1):0);
+		    					setSelectionRange.apply(this, [0,0]);
+		    				}
+		    				else
+		    				{
+		    					data.c = end-this.value.length;
+		    				}
 	    				}
 	    				
 	    				// Otherwise, we need to reset the caret position
