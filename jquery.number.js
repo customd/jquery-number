@@ -1,5 +1,5 @@
 /**
- * jQuery number plug-in 2.1.1
+ * jQuery number plug-in 2.1.2
  * Copyright 2012, Digital Fusion
  * Licensed under the MIT license.
  * http://opensource.teamdf.com/license/
@@ -11,6 +11,8 @@
  * @docs	http://www.teamdf.com/web/jquery-number-format-redux/196/
  */
 (function($){
+	
+	"use strict";
 	
 	/**
 	 * Method for selecting a range of characters in an input/textarea.
@@ -237,7 +239,7 @@
 		    				else if( chara === dec_point )
 		    				{
 		    					start = end = 1;
-		    					this.value = '0.0';
+		    					this.value = '0'+ dec_point + (new Array(decimals+1).join('0'));
 		    					
 		    					// Reset the cursor position.
 		    					data.init = (decimals>0?1:0);
