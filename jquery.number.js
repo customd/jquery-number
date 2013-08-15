@@ -1,5 +1,5 @@
 /**
- * jQuery number plug-in 2.1.2
+ * jQuery number plug-in 2.1.3
  * Copyright 2012, Digital Fusion
  * Licensed under the MIT license.
  * http://opensource.teamdf.com/license/
@@ -244,11 +244,12 @@
 		    					// Reset the cursor position.
 		    					data.init = (decimals>0?1:0);
 		    					data.c = (decimals>0?-(decimals+1):0);
-		    					setSelectionRange.apply(this, [0,0]);
 		    				}
-		    				else
+		    				else if( this.value.length === 0 )
 		    				{
-		    					data.c = end-this.value.length;
+		    					// Reset the cursor position.
+		    					data.init = (decimals>0?-1:0);
+		    					data.c = (decimals>0?-(decimals):0);
 		    				}
 	    				}
 	    				
