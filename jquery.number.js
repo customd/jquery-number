@@ -1,5 +1,6 @@
+
 /**
- * jQuery number plug-in 2.1.0
+ * jQuery number plug-in 2.1.2
  * Copyright 2012, Digital Fusion
  * Licensed under the MIT license.
  * http://opensource.teamdf.com/license/
@@ -11,6 +12,7 @@
  * @docs	http://www.teamdf.com/web/jquery-number-format-redux/196/
  */
 (function($){
+
 "use strict";
 	
 	/**
@@ -200,6 +202,7 @@
 
 
 	    				
+
 	    				// Stop executing if the user didn't type a number key, a decimal character, or backspace.
                         if( code !== 46 && code !== 8 && code !== 110 && chara != dec_point && !chara.match(/[0-9]/) )
 	    				{
@@ -221,7 +224,7 @@
 							return false;
 	    				}
 
-	    				// The whole lot has been selected, or if the field is empty, and the character
+	    				// The whole lot has been selected, or if the field is empty...
 	    				if( start == 0 && end == this.value.length || $this.val() === 0  && !e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1 )
 	    				{
 	    					// Blank out the field, but only if the data object has already been instanciated.
@@ -362,6 +365,7 @@
 	    				// If we need to re-position the characters.
 	    				if( setPos !== false )
 	    				{
+	    					//console.log('Setpos keydown: ', setPos );
 	    					setSelectionRange.apply(this, [setPos, setPos]);
 	    				}
 	    				
@@ -385,6 +389,7 @@
 	    					code	= (e.keyCode ? e.keyCode : e.which),
 	    					start	= getSelection.apply(this,['start']),
 	    					setPos;
+
 	    				// Stop executing if the user didn't type a number key, a decimal, or a comma.
                         if( this.value === '' || (code < 48 || code > 57) && (code < 96 || code > 105 ) && code !== 8 && code !== 46 ) return;
 
@@ -416,7 +421,6 @@
 		    				// the decimal character itself is entered.
                             if( typeof data.init === 'number' && data.init < 1 )
 		    				{
-
 		    					start		= this.value.length-decimals-( data.init < 0 ? 1 : 0 );
 		    					data.c		= start-this.value.length;
 		    					data.init	= 1;
@@ -453,6 +457,8 @@
                             data.c++;
                         }
 	    				
+	    				//console.log( 'Setting pos: ', start, decimals, this.value.length + data.c, this.value.length, data.c );
+
 	    				// Set the selection position.
 	    				setPos = this.value.length+data.c;
 	    				setSelectionRange.apply(this, [setPos, setPos]);
