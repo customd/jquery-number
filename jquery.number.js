@@ -1,5 +1,5 @@
 /**
- * jQuery number plug-in 2.1.2
+ * jQuery number plug-in 2.1.3
  * Copyright 2012, Digital Fusion
  * Licensed under the MIT license.
  * http://opensource.teamdf.com/license/
