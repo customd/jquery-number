@@ -224,8 +224,10 @@
 	    				}
 
 	    				// The whole lot has been selected, or if the field is empty...
-	    				if( start == 0 && end == this.value.length || $this.val() === 0  && !e.metaKey && !e.ctrlKey && !e.altKey && chara.length === 1 )
+	    				if( start == 0 && end == this.value.length || $this.val() == 0 )
 	    				{
+	    					if( code === 8 )
+	    					{
 	    					// Blank out the field, but only if the data object has already been instanciated.
     						start = end = 1;
     						this.value = '';
@@ -233,16 +235,22 @@
     						// Reset the cursor position.
 	    					data.init = (decimals>0?-1:0);
 	    					data.c = (decimals>0?-(decimals+1):0);
-
-                            if( chara == dec_point && decimals>0 )
-                            {
-                                this.value = '0'+ dec_point + new Array(decimals+1).join('0');
-                                start = end = 2;
-                                setSelectionRange.apply(this, [2,2]);
+                            setSelectionRange.apply(this, [0,0]);
                             }
-                            else
+                            else if( chara === dec_point && decimals>0 )
                             {
-	    					    setSelectionRange.apply(this, [0,0]);
+                                start = end = 1;
+                                this.value = '0'+ dec_point + (new Array(decimals+1).join('0'));
+
+                                // Reset the cursor position.
+                                data.init = (decimals>0?1:0);
+                                data.c = (decimals>0?-(decimals+1):0);
+                            }
+		    				else if( this.value.length === 0 )
+                            {
+		    					// Reset the cursor position.
+		    					data.init = (decimals>0?-1:0);
+		    					data.c = (decimals>0?-(decimals):0);
 	    				    }
                         }
 
