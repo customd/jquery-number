@@ -576,9 +576,16 @@
 		
 			// If we've got a finite number, return it.
 			// Otherwise, simply return 0.
+			num = ( isFinite( num ) ? num : 0 );
+			
+			// If it's a negative number, times by -1.
+			if (num != 0 && data.isNegative) {
+			  num *= -1;
+			}
+			
 			// Return as a string... thats what we're
 			// used to with .val()
-			return ''+( isFinite( num ) ? num : 0 );
+			return ''+num;
 		}
 	};
 	
