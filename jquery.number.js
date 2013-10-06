@@ -569,6 +569,12 @@
 			// Remove formatting, and return as number.
 			if( el.value === '' ) return '';
 			
+			// If the first character is a minus sign,
+			// we assume the number is negative.
+			if (el.value.match(/^-/)) {
+				data.isNegative = true;
+			}
+
 			// Convert to a number.
 			num = +(el.value
 				.replace( data.regex_dec_num, '' )
