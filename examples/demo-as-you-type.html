@@ -28,7 +28,7 @@
 					console.log('Second change event...');
 				});
 				
-				$('#price').number( true, 2 );
+				$('#price').number( true, 2, ',', '.', true);
 				
 				
 				// Get the value of the number for the demo.
@@ -73,7 +73,7 @@
 			
 			<p><a href="http://github.com/teamdf/jquery-number/">Back to GitHub</a> or <a href="http://www.teamdf.com/web/jquery-number-format-redux/196/">Back to Blog Article</a></p>
 			<p>Live, as-you-type formatting of a number.</p>
-			<code class="prettyprint lang-javascript">$('#price').number( true, 2 );</code>
+			<code class="prettyprint lang-javascript">$('#price').number( true, 2, ',', '.', true );</code>
 			
 			<div class="wrap">
 				<label for="number">How much would you like to pay?</label><br />
