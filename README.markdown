@@ -29,7 +29,7 @@ The number method takes up to four parameters, but only the first one is require
 		
 		$.number( 135.8729, 3, ',' ); // Outputs: 135,873
 
-4. Thousands Separtor: The character(s) to use as a thousands separator. Defaults to ','.
+4. Thousands Separator: The character(s) to use as a thousands separator. Defaults to ','.
 
 		$.number( 5020.2364, 1, ',', ' ' ); // Outputs: 5 020,2	
 
