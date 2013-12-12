@@ -591,6 +591,10 @@
 		}
 		else
 		{
+			if(val === '')
+			{
+				return el.value = '';
+			}
 			// Otherwise, don't worry about other valhooks, just run ours.
 			return el.value = $.number( val, data.decimals, data.dec_point, data.thousands_sep );
 		}
