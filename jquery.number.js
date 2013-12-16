@@ -204,22 +204,32 @@
 	    				// Stop executing if the user didn't type a number key, a decimal character, or backspace.
 	    				if( code !== 8 && chara != dec_point && !chara.match(/[0-9]/) )
 	    				{
-	    					// We need the original keycode now...
-	    					var key = (e.keyCode ? e.keyCode : e.which);
-	    					if( // Allow control keys to go through... (delete, etc)
-	    						key == 46 || key == 8 || key == 9 || key == 27 || key == 13 || 
-	    						// Allow: Ctrl+A, Ctrl+R
-	    						( (key == 65 || key == 82 ) && ( e.ctrlKey || e.metaKey ) === true ) || 
-	    						// Allow: Ctrl+V, Ctrl+C
-	    						( (key == 86 || key == 67 ) && ( e.ctrlKey || e.metaKey ) === true ) || 
-	    						// Allow: home, end, left, right
-	    						( (key >= 35 && key <= 39) )
-							){
-								return;
+	    					var ct = true;
+							if (chara.match(/[-]/)) {
+								if (!data.isNegative) {
+									// User is trying to make this field a negative number
+									data.isNegative = true;
+									ct = false;
+								}
 							}
-							// But prevent all other keys.
-							e.preventDefault();
-							return false;
+  							if (ct) {
+		    					// We need the original keycode now...
+		    					var key = (e.keyCode ? e.keyCode : e.which);
+		    					if( // Allow control keys to go through... (delete, etc)
+		    						key == 46 || key == 8 || key == 9 || key == 27 || key == 13 || 
+		    						// Allow: Ctrl+A, Ctrl+R
+		    						( (key == 65 || key == 82 ) && ( e.ctrlKey || e.metaKey ) === true ) || 
+		    						// Allow: Ctrl+V, Ctrl+C
+		    						( (key == 86 || key == 67 ) && ( e.ctrlKey || e.metaKey ) === true ) || 
+		    						// Allow: home, end, left, right
+		    						( (key >= 35 && key <= 39) )
+								){
+									return;
+								}
+								// But prevent all other keys.
+								e.preventDefault();
+								return false;
+							}
 	    				}
 	    				
 	    				// The whole lot has been selected, or if the field is empty...
@@ -260,10 +270,18 @@
 	    					data.c = end-this.value.length;
 	    				}
 	    				
+	    				// If they are trying to delete the negative sign
+						if (code == 8 && start <= 1 && data.isNegative)
+						{
+							e.preventDefault();
+							data.isNegative = false;
+							data.c--;
+							setPos = this.value.length+data.c;
+						}
 	    				// If the start position is before the decimal point,
 	    				// and the user has typed a decimal point, we need to move the caret
 	    				// past the decimal place.
-	    				if( decimals > 0 && chara == dec_point && start == this.value.length-decimals-1 )
+	    				else if( decimals > 0 && chara == dec_point && start == this.value.length-decimals-1 )
 	    				{
 	    					data.c++;
 	    					data.init = Math.max(0,data.init);
@@ -414,6 +432,14 @@
 	    				
 	    				//console.log( 'Setting pos: ', start, decimals, this.value.length + data.c, this.value.length, data.c );
 	    				
+	    				if (!$this.get(0).value.length) {
+	    					// If they delete the entire contents of the text field, remove the 'negative' variable
+							data.isNegative = false;
+						} else if (data.isNegative) {
+							// Otherwise, we add the - sign to the beginning of the field if it's negative
+							$this.get(0).value = '-' + this.value;
+						}
+	    				
 	    				// Set the selection position.
 	    				setPos = this.value.length+data.c;
 	    				setSelectionRange.apply(this, [setPos, setPos]);
@@ -543,6 +569,12 @@
 			// Remove formatting, and return as number.
 			if( el.value === '' ) return '';
 			
+			// If the first character is a minus sign,
+			// we assume the number is negative.
+			if (el.value.match(/^-/)) {
+				data.isNegative = true;
+			}
+
 			// Convert to a number.
 			num = +(el.value
 				.replace( data.regex_dec_num, '' )
@@ -550,9 +582,16 @@
 		
 			// If we've got a finite number, return it.
 			// Otherwise, simply return 0.
+			num = ( isFinite( num ) ? num : 0 );
+			
+			// If it's a negative number, times by -1.
+			if (num != 0 && data.isNegative) {
+			  num *= -1;
+			}
+			
 			// Return as a string... thats what we're
 			// used to with .val()
-			return ''+( isFinite( num ) ? num : 0 );
+			return ''+num;
 		}
 	};
 	
