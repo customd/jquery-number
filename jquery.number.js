@@ -498,11 +498,13 @@
 	    	}
 	    	else
 	    	{
-		    	// return the collection.
-		    	return this.each(function(){
-		    		var $this = $(this), num = +$this.text().replace(regex_dec_num,'').replace(regex_dec,'.');
-		    		$this.number( !isFinite(num) ? 0 : +num, decimals, dec_point, thousands_sep );
-		    	});
+				// return the collection.
+				return this.each(function(){
+					var $this = $(this),
+						isNegative = $this.text().match(/^-/) ? -1 : 1,
+						num = +$this.text().replace(regex_dec_num,'').replace(regex_dec,'.') * isNegative;
+					$this.number( !isFinite(num) ? 0 : +num, decimals, dec_point, thousands_sep );
+				});
 	    	}
 	    }
 	    
