@@ -632,7 +632,7 @@
 		}
 		else
 		{
-			if(val === '')
+			if(val == '')
 			{
 				return el.value = '';
 			}
