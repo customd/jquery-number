@@ -97,8 +97,7 @@
 			173 : 45,
 			187 : 61, //IE Key codes
 			186 : 59, //IE Key codes
-			189 : 45, //IE Key codes
-			110 : 46  //IE Key codes
+			189 : 45 //IE Key codes
         },
         shifts : {
 			96 : "~",
@@ -187,9 +186,11 @@
 					            code = _keydown.codes[code];
 					        }
 					        if (!e.shiftKey && (code >= 65 && code <= 90)){
-					        	code += 32;
+					            code += 32;
 					        } else if (!e.shiftKey && (code >= 69 && code <= 105)){
-					        	code -= 48;
+					            code -= 48;
+					        } else if (!e.shiftKey && code == 110){
+					            chara = dec_point;
 					        } else if (e.shiftKey && _keydown.shifts.hasOwnProperty(code)){
 					            //get shifted keyCode value
 					            chara = _keydown.shifts[code];
@@ -399,7 +400,7 @@
 	    					setPos;
 	    				    				    			
 	    				// Stop executing if the user didn't type a number key, a decimal, or a comma.
-	    				if( this.value === '' || (code < 48 || code > 57) && (code < 96 || code > 105 ) && code !== 8 ) return;
+	    				if( this.value === '' || (code < 48 || code > 57) && (code < 96 || code > 105 ) && code !== 8 && code !== 110 ) return;
 	    				
 	    				// Re-format the textarea.
 	    				$this.val($this.val());
