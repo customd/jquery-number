@@ -256,7 +256,7 @@
 		    					data.init = (decimals>0?1:0);
 		    					data.c = (decimals>0?-(decimals+1):0);
 		    				}
-		    				else if( this.value.length === 0 )
+		    				else
 		    				{
 		    					// Reset the cursor position.
 		    					data.init = (decimals>0?-1:0);
