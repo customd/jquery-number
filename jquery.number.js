@@ -438,7 +438,10 @@
 							data.isNegative = false;
 						} else if (data.isNegative) {
 							// Otherwise, we add the - sign to the beginning of the field if it's negative
-							$this.get(0).value = '-' + this.value;
+							// $this.get(0).value = '-' + this.value;
+							
+							// There is no need for '-' sign (CMIIW)
+							$this.get(0).value = this.value;
 						}
 	    				
 	    				// Set the selection position.
