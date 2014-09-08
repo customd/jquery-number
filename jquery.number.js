@@ -1,19 +1,19 @@
 /**
- * jQuery number plug-in 2.1.3
+ * jQuery number plug-in 2.1.4
  * Copyright 2012, Digital Fusion
  * Licensed under the MIT license.
  * http://opensource.teamdf.com/license/
  *
  * A jQuery plugin which implements a permutation of phpjs.org's number_format to provide
  * simple number formatting, insertion, and as-you-type masking of a number.
- * 
+ *
  * @author	Sam Sehnert
  * @docs	http://www.teamdf.com/web/jquery-number-format-redux/196/
  */
 (function($){
-	
+
 	"use strict";
-	
+
 	/**
 	 * Method for selecting a range of characters in an input/textarea.
 	 *
@@ -33,7 +33,7 @@
 				range.moveEnd( 'character',		rangeEnd-rangeStart );
 				range.select();
 		}
-		
+
 		// Alternate setSelectionRange method for supporting browsers.
 		else if( this.setSelectionRange )
 		{
@@ -41,10 +41,10 @@
 			this.setSelectionRange( rangeStart, rangeEnd );
 		}
 	}
-	
+
 	/**
 	 * Get the selection position for the given part.
-	 * 
+	 *
 	 * @param string part			: Options, 'Start' or 'End'. The selection position to get.
 	 *
 	 * @return int : The index position of the selection part.
@@ -52,10 +52,10 @@
 	function getSelection( part )
 	{
 		var pos	= this.value.length;
-		
+
 		// Work out the selection part.
 		part = ( part.toLowerCase() == 'start' ? 'Start' : 'End' );
-		
+
 		if( document.selection ){
 			// The current selection
 			var range = document.selection.createRange(), stored_range, selectionStart, selectionEnd;
@@ -71,14 +71,14 @@
 			selectionEnd = selectionStart + range.text.length;
 			return part == 'Start' ? selectionStart : selectionEnd;
 		}
-		
+
 		else if(typeof(this['selection'+part])!="undefined")
 		{
 		 	pos = this['selection'+part];
 		}
 		return pos;
 	}
-	
+
 	/**
 	 * Substitutions for keydown keycodes.
 	 * Allows conversion from e.which to ascii characters.
@@ -97,7 +97,8 @@
 			173 : 45,
 			187 : 61, //IE Key codes
 			186 : 59, //IE Key codes
-			189 : 45 //IE Key codes
+			189 : 45, //IE Key codes
+			110 : 46  //IE Key codes
         },
         shifts : {
 			96 : "~",
@@ -123,7 +124,7 @@
 			47 : "?"
         }
     };
-	
+
 	/**
 	 * jQuery number formatter plugin. This will allow you to format numbers on an element.
 	 *
@@ -132,17 +133,17 @@
 	 * @return : The jQuery collection the method was called with.
 	 */
 	$.fn.number = function( number, decimals, dec_point, thousands_sep ){
-	    
+
 	    // Enter the default thousands separator, and the decimal placeholder.
 	    thousands_sep	= (typeof thousands_sep === 'undefined') ? ',' : thousands_sep;
 	    dec_point		= (typeof dec_point === 'undefined') ? '.' : dec_point;
 	    decimals		= (typeof decimals === 'undefined' ) ? 0 : decimals;
-	    	    
+
 	    // Work out the unicode character for the decimal placeholder.
 	    var u_dec			= ('\\u'+('0000'+(dec_point.charCodeAt(0).toString(16))).slice(-4)),
 	    	regex_dec_num	= new RegExp('[^'+u_dec+'0-9]','g'),
 	    	regex_dec		= new RegExp(u_dec,'g');
-	    
+
 	    // If we've specified to take the number from the target element,
 	    // we loop over the collection, and get the number.
 	    if( number === true )
@@ -152,16 +153,27 @@
 	    	{
 	    		// Return the jquery collection.
 	    		return this.on({
-	    			
+
 	    			/**
 	    			 * Handles keyup events, re-formatting numbers.
+	    			 *
+	    			 * Uses 'data' object to keep track of important information.
+	    			 *
+	    			 * data.c
+	    			 * This variable keeps track of where the caret *should* be. It works out the position as
+	    			 * the number of characters from the end of the string. E.g., '1^,234.56' where ^ denotes the caret,
+	    			 * would be index -7 (e.g., 7 characters from the end of the string). At the end of both the key down
+	    			 * and key up events, we'll re-position the caret to wherever data.c tells us the cursor should be.
+	    			 * This gives us a mechanism for incrementing the cursor position when we come across decimals, commas
+	    			 * etc. This figure typically doesn't increment for each keypress when to the left of the decimal,
+	    			 * but does when to the right of the decimal.
 	    			 *
 	    			 * @param object e			: the keyup event object.s
 	    			 *
 	    			 * @return void;
 	    			 */
 	    			'keydown.format' : function(e){
-	    				
+
 	    				// Define variables used in the code below.
 	    				var $this	= $(this),
 	    					data	= $this.data('numFormat'),
@@ -171,11 +183,11 @@
 	    					end		= getSelection.apply(this,['end']),
 	    					val		= '',
 	    					setPos	= false;
-	    				
+
 	    				// Webkit (Chrome & Safari) on windows screws up the keyIdentifier detection
 	    				// for numpad characters. I've disabled this for now, because while keyCode munging
 	    				// below is hackish and ugly, it actually works cross browser & platform.
-	    				
+
 //	    				if( typeof e.originalEvent.keyIdentifier !== 'undefined' )
 //	    				{
 //	    					chara = unescape(e.originalEvent.keyIdentifier.replace('U+','%u'));
@@ -186,53 +198,39 @@
 					            code = _keydown.codes[code];
 					        }
 					        if (!e.shiftKey && (code >= 65 && code <= 90)){
-					            code += 32;
+					        	code += 32;
 					        } else if (!e.shiftKey && (code >= 69 && code <= 105)){
-					            code -= 48;
-					        } else if (!e.shiftKey && code == 110){
-					            chara = dec_point;
+					        	code -= 48;
 					        } else if (e.shiftKey && _keydown.shifts.hasOwnProperty(code)){
 					            //get shifted keyCode value
 					            chara = _keydown.shifts[code];
 					        }
-					        
+
 					        if( chara == '' ) chara = String.fromCharCode(code);
 //	    				}
-						
 
-			
-	    				
+
 	    				// Stop executing if the user didn't type a number key, a decimal character, or backspace.
-	    				if( code !== 8 && chara != dec_point && !chara.match(/[0-9]/) )
+	    				if( code !== 8 && code !== 45 && chara != dec_point && !chara.match(/[0-9]/) )
 	    				{
-	    					var ct = true;
-							if (chara.match(/[-]/)) {
-								if (!data.isNegative) {
-									// User is trying to make this field a negative number
-									data.isNegative = true;
-									ct = false;
-								}
+	    					// We need the original keycode now...
+	    					var key = (e.keyCode ? e.keyCode : e.which);
+	    					if( // Allow control keys to go through... (delete, etc)
+	    						key == 46 || key == 8 || key == 9 || key == 27 || key == 13 ||
+	    						// Allow: Ctrl+A, Ctrl+R
+	    						( (key == 65 || key == 82 ) && ( e.ctrlKey || e.metaKey ) === true ) ||
+	    						// Allow: Ctrl+V, Ctrl+C
+	    						( (key == 86 || key == 67 ) && ( e.ctrlKey || e.metaKey ) === true ) ||
+	    						// Allow: home, end, left, right
+	    						( (key >= 35 && key <= 39) )
+							){
+								return;
 							}
-  							if (ct) {
-		    					// We need the original keycode now...
-		    					var key = (e.keyCode ? e.keyCode : e.which);
-		    					if( // Allow control keys to go through... (delete, etc)
-		    						key == 46 || key == 8 || key == 9 || key == 27 || key == 13 || 
-		    						// Allow: Ctrl+A, Ctrl+R
-		    						( (key == 65 || key == 82 ) && ( e.ctrlKey || e.metaKey ) === true ) || 
-		    						// Allow: Ctrl+V, Ctrl+C
-		    						( (key == 86 || key == 67 ) && ( e.ctrlKey || e.metaKey ) === true ) || 
-		    						// Allow: home, end, left, right
-		    						( (key >= 35 && key <= 39) )
-								){
-									return;
-								}
-								// But prevent all other keys.
-								e.preventDefault();
-								return false;
-							}
+							// But prevent all other keys.
+							e.preventDefault();
+							return false;
 	    				}
-	    				
+
 	    				// The whole lot has been selected, or if the field is empty...
 	    				if( start == 0 && end == this.value.length || $this.val() == 0 )
 	    				{
@@ -241,7 +239,7 @@
 		    					// Blank out the field, but only if the data object has already been instanciated.
 	    						start = end = 1;
 	    						this.value = '';
-	    						
+
 	    						// Reset the cursor position.
 		    					data.init = (decimals>0?-1:0);
 		    					data.c = (decimals>0?-(decimals+1):0);
@@ -251,10 +249,21 @@
 		    				{
 		    					start = end = 1;
 		    					this.value = '0'+ dec_point + (new Array(decimals+1).join('0'));
-		    					
+
 		    					// Reset the cursor position.
 		    					data.init = (decimals>0?1:0);
 		    					data.c = (decimals>0?-(decimals+1):0);
+		    				}
+		    				else if( code === 45 )
+		    				{
+		    					start = end = 2;
+		    					this.value = '-0'+dec_point + (new Array(decimals+1).join('0'));
+
+		    					// Reset the cursor position.
+		    					data.init = (decimals>0?1:0);
+		    					data.c = (decimals>0?-(decimals+1):0);
+
+		    					setSelectionRange.apply(this, [2,2]);
 		    				}
 		    				else
 		    				{
@@ -263,35 +272,32 @@
 		    					data.c = (decimals>0?-(decimals):0);
 		    				}
 	    				}
-	    				
+
 	    				// Otherwise, we need to reset the caret position
 	    				// based on the users selection.
 	    				else
 	    				{
 	    					data.c = end-this.value.length;
 	    				}
-	    				
-	    				// If they are trying to delete the negative sign
-						if (code == 8 && start <= 1 && data.isNegative)
-						{
-							e.preventDefault();
-							data.isNegative = false;
-							data.c--;
-							setPos = this.value.length+data.c;
-						}
+
 	    				// If the start position is before the decimal point,
 	    				// and the user has typed a decimal point, we need to move the caret
 	    				// past the decimal place.
-	    				else if( decimals > 0 && chara == dec_point && start == this.value.length-decimals-1 )
+	    				if( decimals > 0 && chara == dec_point && start == this.value.length-decimals-1 )
 	    				{
 	    					data.c++;
 	    					data.init = Math.max(0,data.init);
 	    					e.preventDefault();
-	    					
+
 	    					// Set the selection position.
 	    					setPos = this.value.length+data.c;
 	    				}
-	    				
+
+	    				else if( code === 45 )
+	    				{
+	    					e.preventDefault();
+	    				}
+
 	    				// If the user is just typing the decimal place,
 	    				// we simply ignore it.
 	    				else if( chara == dec_point )
@@ -299,25 +305,25 @@
 	    					data.init = Math.max(0,data.init);
 	    					e.preventDefault();
 	    				}
-	    				
+
 	    				// If hitting the delete key, and the cursor is behind a decimal place,
 	    				// we simply move the cursor to the other side of the decimal place.
 	    				else if( decimals > 0 && code == 8 && start == this.value.length-decimals )
 	    				{
 	    					e.preventDefault();
 	    					data.c--;
-	    					
+
 	    					// Set the selection position.
 	    					setPos = this.value.length+data.c;
 	    				}
-	    				
+
 	    				// If hitting the delete key, and the cursor is to the right of the decimal
 	    				// (but not directly to the right) we replace the character preceeding the
 	    				// caret with a 0.
 	    				else if( decimals > 0 && code == 8 && start > this.value.length-decimals )
 	    				{
 	    					if( this.value === '' ) return;
-	    					
+
 	    					// If the character preceeding is not already a 0,
 	    					// replace it with one.
 	    					if( this.value.slice(start-1, start) != '0' )
@@ -325,14 +331,14 @@
 	    						val = this.value.slice(0, start-1) + '0' + this.value.slice(start);
 	    						$this.val(val.replace(regex_dec_num,'').replace(regex_dec,dec_point));
 	    					}
-	    					
+
 	    					e.preventDefault();
 	    					data.c--;
-	    					
+
 	    					// Set the selection position.
 	    					setPos = this.value.length+data.c;
 	    				}
-	    				
+
 	    				// If the delete key was pressed, and the character immediately
 	    				// before the caret is a thousands_separator character, simply
 	    				// step over it.
@@ -340,13 +346,13 @@
 	    				{
 	    					e.preventDefault();
 	    					data.c--;
-	    					
+
 	    					// Set the selection position.
 	    					setPos = this.value.length+data.c;
 	    				}
-	    				
+
 	    				// If the caret is to the right of the decimal place, and the user is entering a
-	    				// number, remove the following character before putting in the new one. 
+	    				// number, remove the following character before putting in the new one.
 	    				else if(
 	    					decimals > 0 &&
 	    					start == end &&
@@ -365,24 +371,24 @@
 	    					{
 	    						val = this.value.slice(0, start)+this.value.slice(start+1);
 	    					}
-	    					
+
 	    					// Reset the position.
 	    					this.value = val;
 	    					setPos = start;
 	    				}
-	    				
+
 	    				// If we need to re-position the characters.
 	    				if( setPos !== false )
 	    				{
 	    					//console.log('Setpos keydown: ', setPos );
 	    					setSelectionRange.apply(this, [setPos, setPos]);
 	    				}
-	    				
+
 	    				// Store the data on the element.
 	    				$this.data('numFormat', data);
-	    				
+
 	    			},
-	    			
+
 	    			/**
 	    			 * Handles keyup events, re-formatting numbers.
 	    			 *
@@ -391,24 +397,42 @@
 	    			 * @return void;
 	    			 */
 	    			'keyup.format' : function(e){
-	    				
+
 	    				// Store these variables for use below.
 	    				var $this	= $(this),
 	    					data	= $this.data('numFormat'),
 	    					code	= (e.keyCode ? e.keyCode : e.which),
 	    					start	= getSelection.apply(this,['start']),
+	    					end		= getSelection.apply(this,['end']),
 	    					setPos;
-	    				    				    			
+
+
+						// Check for negative characters being entered at the start of the string.
+						// If there's any kind of selection, just ignore the input.
+						if( start === 0 && end === 0 && ( code === 189 || code === 109 ) )
+						{
+							$this.val('-'+$this.val());
+
+							start		= 1;
+	    					data.c		= 1-this.value.length;
+	    					data.init	= 1;
+
+	    					$this.data('numFormat', data);
+
+	    					setPos = this.value.length+data.c;
+	    					setSelectionRange.apply(this, [setPos, setPos]);
+						}
+
 	    				// Stop executing if the user didn't type a number key, a decimal, or a comma.
-	    				if( this.value === '' || (code < 48 || code > 57) && (code < 96 || code > 105 ) && code !== 8 && code !== 110 ) return;
-	    				
+	    				if( this.value === '' || (code < 48 || code > 57) && (code < 96 || code > 105 ) && code !== 8 ) return;
+
 	    				// Re-format the textarea.
 	    				$this.val($this.val());
 
 	    				if( decimals > 0 )
 	    				{
 		    				// If we haven't marked this item as 'initialised'
-		    				// then do so now. It means we should place the caret just 
+		    				// then do so now. It means we should place the caret just
 		    				// before the decimal. This will never be un-initialised before
 		    				// the decimal character itself is entered.
 		    				if( data.init < 1 )
@@ -416,39 +440,28 @@
 		    					start		= this.value.length-decimals-( data.init < 0 ? 1 : 0 );
 		    					data.c		= start-this.value.length;
 		    					data.init	= 1;
-		    					
+
 		    					$this.data('numFormat', data);
 		    				}
-		    				
+
 		    				// Increase the cursor position if the caret is to the right
 		    				// of the decimal place, and the character pressed isn't the delete key.
 		    				else if( start > this.value.length-decimals && code != 8 )
 		    				{
 		    					data.c++;
-		    					
+
 		    					// Store the data, now that it's changed.
 		    					$this.data('numFormat', data);
 		    				}
 	    				}
-	    				
+
 	    				//console.log( 'Setting pos: ', start, decimals, this.value.length + data.c, this.value.length, data.c );
-	    				
-	    				if (!$this.get(0).value.length) {
-	    					// If they delete the entire contents of the text field, remove the 'negative' variable
-							data.isNegative = false;
-						} else if (data.isNegative) {
-							// Otherwise, we add the - sign to the beginning of the field if it's negative
-							// $this.get(0).value = '-' + this.value;
-							
-							// There is no need for '-' sign (CMIIW)
-							$this.get(0).value = this.value;
-						}
-	    				
+
 	    				// Set the selection position.
 	    				setPos = this.value.length+data.c;
 	    				setSelectionRange.apply(this, [setPos, setPos]);
 	    			},
-	    			
+
 	    			/**
 	    			 * Reformat when pasting into the field.
 	    			 *
@@ -457,32 +470,32 @@
 	    			 * @return false : prevent default action.
 	    			 */
 	    			'paste.format' : function(e){
-	    				
+
 	    				// Defint $this. It's used twice!.
 	    				var $this		= $(this),
 	    					original	= e.originalEvent,
 	    					val		= null;
-						
+
 						// Get the text content stream.
 						if (window.clipboardData && window.clipboardData.getData) { // IE
 							val = window.clipboardData.getData('Text');
 						} else if (original.clipboardData && original.clipboardData.getData) {
 							val = original.clipboardData.getData('text/plain');
 						}
-						
+
 	    				// Do the reformat operation.
 	    				$this.val(val);
-	    				
+
 	    				// Stop the actual content from being pasted.
 	    				e.preventDefault();
 	    				return false;
 	    			}
-	    		
+
 	    		})
-	    		
+
 	    		// Loop each element (which isn't blank) and do the format.
     			.each(function(){
-    			
+
     				var $this = $(this).data('numFormat',{
     					c				: -(decimals+1),
     					decimals		: decimals,
@@ -492,43 +505,41 @@
     					regex_dec		: regex_dec,
     					init			: false
     				});
-    				
+
     				// Return if the element is empty.
     				if( this.value === '' ) return;
-    				
+
     				// Otherwise... format!!
     				$this.val($this.val());
     			});
 	    	}
 	    	else
 	    	{
-				// return the collection.
-				return this.each(function(){
-					var $this = $(this),
-						isNegative = $this.text().match(/^-/) ? -1 : 1,
-						num = +$this.text().replace(regex_dec_num,'').replace(regex_dec,'.') * isNegative;
-					$this.number( !isFinite(num) ? 0 : +num, decimals, dec_point, thousands_sep );
-				});
+		    	// return the collection.
+		    	return this.each(function(){
+		    		var $this = $(this), num = +$this.text().replace(regex_dec_num,'').replace(regex_dec,'.');
+		    		$this.number( !isFinite(num) ? 0 : +num, decimals, dec_point, thousands_sep );
+		    	});
 	    	}
 	    }
-	    
+
 	    // Add this number to the element as text.
 	    return this.text( $.number.apply(window,arguments) );
 	};
-	
+
 	//
 	// Create .val() hooks to get and set formatted numbers in inputs.
 	//
-	
+
 	// We check if any hooks already exist, and cache
 	// them in case we need to re-use them later on.
 	var origHookGet = null, origHookSet = null;
-	 
+
 	// Check if a text valHook already exists.
 	if( $.isPlainObject( $.valHooks.text ) )
 	{
 	    // Preserve the original valhook function
-	    // we'll call this for values we're not 
+	    // we'll call this for values we're not
 	    // explicitly handling.
 	    if( $.isFunction( $.valHooks.text.get ) ) origHookGet = $.valHooks.text.get;
 	    if( $.isFunction( $.valHooks.text.set ) ) origHookSet = $.valHooks.text.set;
@@ -537,8 +548,8 @@
 	{
 	    // Define an object for the new valhook.
 	    $.valHooks.text = {};
-	} 
-	
+	}
+
 	/**
 	 * Define the valHook to return normalised field data against an input
 	 * which has been tagged by the number formatter.
@@ -549,11 +560,11 @@
 	 *				   javascript number, or undefined to let jQuery handle it normally.
 	 */
 	$.valHooks.text.get = function( el ){
-		
+
 		// Get the element, and its data.
-		var $this	= $(el), num,
+		var $this	= $(el), num, negative,
 			data	= $this.data('numFormat');
-		
+
         // Does this element have our data field?
         if( !data )
         {
@@ -571,36 +582,25 @@
 			}
 		}
 		else
-		{			
+		{
 			// Remove formatting, and return as number.
 			if( el.value === '' ) return '';
-			
-			// If the first character is a minus sign,
-			// we assume the number is negative.
-			if (el.value.match(/^-/)) {
-				data.isNegative = true;
-			}
+
+
 
 			// Convert to a number.
 			num = +(el.value
 				.replace( data.regex_dec_num, '' )
 				.replace( data.regex_dec, '.' ));
-		
+
 			// If we've got a finite number, return it.
 			// Otherwise, simply return 0.
-			num = ( isFinite( num ) ? num : 0 );
-			
-			// If it's a negative number, times by -1.
-			if (num != 0 && data.isNegative) {
-			  num *= -1;
-			}
-			
 			// Return as a string... thats what we're
 			// used to with .val()
-			return ''+num;
+			return (el.value.indexOf('-') === 0 ? '-' : '')+( isFinite( num ) ? num : 0 );
 		}
 	};
-	
+
 	/**
 	 * A valhook which formats a number when run against an input
 	 * which has been tagged by the number formatter.
@@ -609,18 +609,18 @@
 	 * @param float			: The number to set into the value field.
 	 *
 	 * @return mixed : Returns the value that was written to the element,
-	 *				   or undefined to let jQuery handle it normally. 
+	 *				   or undefined to let jQuery handle it normally.
 	 */
 	$.valHooks.text.set = function( el, val )
 	{
 		// Get the element, and its data.
 		var $this	= $(el),
 			data	= $this.data('numFormat');
-		
+
 		// Does this element have our data field?
 		if( !data )
 		{
-		    
+
 		    // Check if the valhook function already exists
 		    if( $.isFunction( origHookSet ) )
 		    {
@@ -636,15 +636,19 @@
 		}
 		else
 		{
-			if(val == '')
+			var num = $.number( val, data.decimals, data.dec_point, data.thousands_sep );
+
+			// Make sure empties are set with correct signs.
+			if(val.indexOf('-') === 0 && +num === 0)
 			{
-				return el.value = '';
+				num = '-'+num;
 			}
+
 			// Otherwise, don't worry about other valhooks, just run ours.
-			return el.value = $.number( val, data.decimals, data.dec_point, data.thousands_sep );
+			return el.value = num;
 		}
 	};
-	
+
 	/**
 	 * The (modified) excellent number formatting method from PHPJS.org.
 	 * http://phpjs.org/functions/number_format/
@@ -664,29 +668,30 @@
 	 * @return string : The formatted number as a string.
 	 */
 	$.number = function( number, decimals, dec_point, thousands_sep ){
+
 		// Set the default values here, instead so we can use them in the replace below.
 		thousands_sep	= (typeof thousands_sep === 'undefined') ? ',' : thousands_sep;
 		dec_point		= (typeof dec_point === 'undefined') ? '.' : dec_point;
 		decimals		= !isFinite(+decimals) ? 0 : Math.abs(decimals);
-		
-		// Work out the unicode representation for the decimal place and thousand sep.	
+
+		// Work out the unicode representation for the decimal place and thousand sep.
 		var u_dec = ('\\u'+('0000'+(dec_point.charCodeAt(0).toString(16))).slice(-4));
 		var u_sep = ('\\u'+('0000'+(thousands_sep.charCodeAt(0).toString(16))).slice(-4));
-		
+
 		// Fix the number, so that it's an actual number.
 		number = (number + '')
 			.replace('\.', dec_point) // because the number if passed in as a float (having . as decimal point per definition) we need to replace this with the passed in decimal point character
 			.replace(new RegExp(u_sep,'g'),'')
 			.replace(new RegExp(u_dec,'g'),'.')
 			.replace(new RegExp('[^0-9+\-Ee.]','g'),'');
-		
+
 		var n = !isFinite(+number) ? 0 : +number,
 		    s = '',
 		    toFixedFix = function (n, decimals) {
 		        var k = Math.pow(10, decimals);
 		        return '' + Math.round(n * k) / k;
 		    };
-		
+
 		// Fix for IE parseFloat(0.55).toFixed(0) = 0;
 		s = (decimals ? toFixedFix(n, decimals) : '' + Math.round(n)).split('.');
 		if (s[0].length > 3) {
@@ -696,7 +701,8 @@
 		    s[1] = s[1] || '';
 		    s[1] += new Array(decimals - s[1].length + 1).join('0');
 		}
+
 		return s.join(dec_point);
 	}
-	
+
 })(jQuery);
