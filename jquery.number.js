@@ -273,7 +273,7 @@
 							else
 							{
 								// Reset the cursor position.
-								data.init = (decimals>0?-1:0);
+								data.init = (decimals>0?1:0);
 								data.c = (decimals>0?-(decimals):0);
 							}
 						}
