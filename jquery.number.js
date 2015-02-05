@@ -703,8 +703,8 @@
 //			{
 //				num = '-'+num;
 //			}
-			
-			return origHookSet(el, num);
+
+			return $.isFunction(origHookSet) ? origHookSet(el, num) : el.value = num;
 		}
 	};
 
