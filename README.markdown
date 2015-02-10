@@ -1,6 +1,6 @@
 # jQuery Number Plugin
 
-### By Sam Sehnert, [Digital Fusion](http://teamdf.com/) 2012
+### By Sam Sehnert, [Custom D](https://www.customd.com/) 2015
 
 This is a [jQuery](http://jquery.com/) plugin which allows developers to easily format numbers 
 for display use. Allows users to replace numbers inline in a document, or return a formatted number
@@ -10,7 +10,7 @@ Requires jQuery 1.6 or greater.
 
 ## Documentation
 
-See our [jQuery Number Format article](http://www.teamdf.com/web/jquery-number-format-redux/196/) for more information.
+See our [jQuery Number Format article](https://www.customd.com/articles/14/jquery-number-format-redux) for more information.
 
 ### Basic number formatting
 
