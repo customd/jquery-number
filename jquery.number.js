@@ -703,8 +703,8 @@
 //			{
 //				num = '-'+num;
 //			}
-			// Otherwise, don't worry about other valhooks, just run ours.
-			return el.value = num;
+
+			return $.isFunction(origHookSet) ? origHookSet(el, num) : el.value = num;
 		}
 	};
 
