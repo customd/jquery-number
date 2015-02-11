@@ -237,7 +237,7 @@
 						}
 
 						// The whole lot has been selected, or if the field is empty...
-						if( start == 0 && end == this.value.length || $this.val() == 0 )
+						if( start == 0 && end == this.value.length ) //|| $this.val() == 0 )
 						{
 							if( code == 8 )		// Backspace
 							{
