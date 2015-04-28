@@ -728,8 +728,8 @@
 	 */
 	$.number = function( number, decimals, dec_point, thousands_sep ){
 		// Set the default values here, instead so we can use them in the replace below.
-		thousands_sep	= (typeof thousands_sep === 'undefined') ? ',' : thousands_sep;
-		dec_point		= (typeof dec_point === 'undefined') ? '.' : dec_point;
+		thousands_sep	= (typeof thousands_sep === 'undefined') ? new Number(1000).toLocaleString().charAt(1) : thousands_sep;
+		dec_point		= (typeof dec_point === 'undefined') ? new Number(0.1).toLocaleString().charAt(1) : dec_point;
 		decimals		= !isFinite(+decimals) ? 0 : Math.abs(decimals);
 
 		// Work out the unicode representation for the decimal place and thousand sep.
