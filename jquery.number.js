@@ -746,8 +746,7 @@
 		var n = !isFinite(+number) ? 0 : +number,
 			s = '',
 			toFixedFix = function (n, decimals) {
-				var k = Math.pow(10, decimals);
-				return '' + Math.round(n * k) / k;
+				return '' + (+(Math.round(n + 'e+' + decimals) + 'e-' + decimals));
 			};
 
 		// Fix for IE parseFloat(0.55).toFixed(0) = 0;
