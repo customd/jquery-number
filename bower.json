@@ -1,5 +1,5 @@
 {
-  "name": "jquery-number",
+  "name": "kztime-jquery-number",
   "main": "jquery.number.min.js",
   "description": "This is a jQuery plugin which allows developers to easily format numbers for display use. Allows users to replace numbers inline in a document, or return a formatted number for other uses.",
   "license": "MIT",
