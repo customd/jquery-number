@@ -529,7 +529,7 @@
 						//console.log( 'Setting pos: ', start, decimals, this.value.length + data.c, this.value.length, data.c );
 
 						// Set the selection position.
-						setPos = this.value.length+data.c;
+						setPos = this.value.length+data.c+this.value.length;
 						setSelectionRange.apply(this, [setPos, setPos]);
 					},
 
