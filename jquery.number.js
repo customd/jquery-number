@@ -227,7 +227,7 @@
 								// Allow: home, end, left, right
 								( (key >= 35 && key <= 39) ) ||
 								// Allow: F1-F12
-								( (key >= 112 && key <= 123) )
+								( (key >= 112 && key <= 123) ) ||
 								(  key == 229 )
 							){
 								return;
@@ -472,7 +472,7 @@
 
 							$this.data('numFormat', data);
 
-							setPos = this.value.length+data.c;
+							setPos = this.value.length+data.c+this.value.length;
 							setSelectionRange.apply(this, [setPos, setPos]);
 						}
 
