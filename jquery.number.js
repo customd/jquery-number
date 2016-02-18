@@ -227,7 +227,8 @@
 								// Allow: home, end, left, right
 								( (key >= 35 && key <= 39) ) ||
 								// Allow: F1-F12
-								( (key >= 112 && key <= 123) )
+								( (key >= 112 && key <= 123) ) ||
+								(  key == 229 )
 							){
 								return;
 							}
@@ -471,12 +472,21 @@
 
 							$this.data('numFormat', data);
 
-							setPos = this.value.length+data.c;
+							setPos = this.value.length+data.c+this.value.length;
 							setSelectionRange.apply(this, [setPos, setPos]);
 						}
 
 						// Stop executing if the user didn't type a number key, a decimal, or a comma.
-						if( this.value === '' || (code < 48 || code > 57) && (code < 96 || code > 105 ) && code !== 8 && code !== 46 && code !== 110 ) return;
+						if (this.value === '' ||
+								(code < 48 || code > 57) &&
+								(code < 96 || code > 105 ) &&
+								code !== 8 &&
+								code !== 46 &&
+								code !== 110 &&
+								code !== 229
+						) {
+							return;
+						}
 
 						// Re-format the textarea.
 						$this.val($this.val());
@@ -519,7 +529,7 @@
 						//console.log( 'Setting pos: ', start, decimals, this.value.length + data.c, this.value.length, data.c );
 
 						// Set the selection position.
-						setPos = this.value.length+data.c;
+						setPos = this.value.length+data.c+this.value.length;
 						setSelectionRange.apply(this, [setPos, setPos]);
 					},
 
