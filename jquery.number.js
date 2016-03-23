@@ -263,7 +263,6 @@
 							{
 								start = end = 2;
 								this.value = '-0'+dec_point + (new Array(decimals+1).join('0'));
-
 								// Reset the cursor position.
 								data.init = (decimals>0?1:0);
 								data.c = (decimals>0?-(decimals+1):0);
@@ -301,8 +300,8 @@
 							setPos = this.value.length+data.c;
 						}
 
-						// Ignore negative sign unless at beginning of number (and it's not already present)
-						else if( code == 45 && (start != 0 || this.value.indexOf('-') == 0) )
+						// Ignore negative sign. Handled in keyup
+						else if( code == 45)
 						{
 							e.preventDefault();
 						}
@@ -438,7 +437,6 @@
 
 						// Store the data on the element.
 						$this.data('numFormat', data);
-
 					},
 
 					/**
@@ -449,7 +447,6 @@
 					 * @return void;
 					 */
 					'keyup.format' : function(e){
-
 						// Store these variables for use below.
 						var $this	= $(this),
 							data	= $this.data('numFormat'),
@@ -459,14 +456,16 @@
 							setPos;
 
 
-						// Check for negative characters being entered at the start of the string.
-						// If there's any kind of selection, just ignore the input.
-						if( start === 0 && end === 0 && ( code === 189 || code === 109 ) )
+						// Check for negative characters being entered.
+						if( code === 189 || code === 109 || code === 173)
 						{
-							$this.val('-'+$this.val());
+							if($this.val().indexOf('-') == -1){
+								$this.val('-' + $this.val());
+							}else{
+								$this.val($this.val().substr(1));
+							}
 
 							start		= 1;
-							data.c		= 1-this.value.length;
 							data.init	= 1;
 
 							$this.data('numFormat', data);
