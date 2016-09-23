@@ -85,6 +85,7 @@
 	 */
 	var _keydown = {
 		codes : {
+      110 : 44,
 			46 : 127,
 			188 : 44,
 			109 : 45,
@@ -99,7 +100,6 @@
 			187 : 61, //IE Key codes
 			186 : 59, //IE Key codes
 			189 : 45, //IE Key codes
-			110 : 46  //IE Key codes
 		},
 		shifts : {
 			96 : "~",
@@ -144,6 +144,9 @@
 		var u_dec			= ('\\u'+('0000'+(dec_point.charCodeAt(0).toString(16))).slice(-4)),
 			regex_dec_num	= new RegExp('[^'+u_dec+'0-9]','g'),
 			regex_dec		= new RegExp(u_dec,'g');
+
+		var u_tho			= ('\\u'+('0000'+(thousands_sep.charCodeAt(0).toString(16))).slice(-4)),
+			regex_tho		= new RegExp(u_tho,'g');
 
 		// If we've specified to take the number from the target element,
 		// we loop over the collection, and get the number.
@@ -345,6 +348,7 @@
 							if( this.value.slice(start, start+1) != '0' )
 							{
 								val = this.value.slice(0, start) + '0' + this.value.slice(start+1);
+                val = val.replace(regex_tho,'');
 								// The regex replacement below removes negative sign from numbers...
 								// not sure why they're necessary here when none of the other cases use them
 								//$this.val(val.replace(regex_dec_num,'').replace(regex_dec,dec_point));
@@ -369,6 +373,7 @@
 							if( this.value.slice(start-1, start) != '0' )
 							{
 								val = this.value.slice(0, start-1) + '0' + this.value.slice(start);
+                val = val.replace(regex_tho,'');
 								// The regex replacement below removes negative sign from numbers...
 								// not sure why they're necessary here when none of the other cases use them
 								//$this.val(val.replace(regex_dec_num,'').replace(regex_dec,dec_point));
@@ -432,7 +437,7 @@
 						// If we need to re-position the characters.
 						if( setPos !== false )
 						{
-							//console.log('Setpos keydown: ', setPos );
+              //console.log('Setpos keydown: ', setPos );
 							setSelectionRange.apply(this, [setPos, setPos]);
 						}
 
