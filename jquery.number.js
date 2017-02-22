@@ -521,6 +521,7 @@
 						// Set the selection position.
 						setPos = this.value.length+data.c;
 						setSelectionRange.apply(this, [setPos, setPos]);
+						this.dispatchEvent(new Event('change'));
 					},
 
 					/**
