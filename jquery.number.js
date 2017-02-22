@@ -742,6 +742,8 @@
 			.replace(new RegExp(u_sep,'g'),'')
 			.replace(new RegExp(u_dec,'g'),'.')
 			.replace(new RegExp('[^0-9+\-Ee.]','g'),'');
+		if(!number){return "";}
+		//so that $(element).val('') won't set the `element` value to 0
 
 		var n = !isFinite(+number) ? 0 : +number,
 			s = '',
