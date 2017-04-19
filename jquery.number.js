@@ -139,7 +139,10 @@
 		thousands_sep	= (typeof thousands_sep === 'undefined') ? ',' : thousands_sep;
 		dec_point		= (typeof dec_point === 'undefined') ? '.' : dec_point;
 		decimals		= (typeof decimals === 'undefined' ) ? 0 : decimals;
-
+		
+		// Change dec_point on numeric keyboard
+		if (dec_point === ',') _keydown.codes[110] = 44;
+		
 		// Work out the unicode character for the decimal placeholder.
 		var u_dec			= ('\\u'+('0000'+(dec_point.charCodeAt(0).toString(16))).slice(-4)),
 			regex_dec_num	= new RegExp('[^'+u_dec+'0-9]','g'),
