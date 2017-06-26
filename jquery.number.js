@@ -476,7 +476,7 @@
 						}
 
 						// Stop executing if the user didn't type a number key, a decimal, or a comma.
-						if( this.value === '' || (code < 48 || code > 57) && (code < 96 || code > 105 ) && code !== 8 && code !== 46 && code !== 110 ) return;
+						if( this.value === '' || (code < 48 || code > 57) && (code < 96 || code > 105 ) && code !== 8 && code !== 46 && code !== 110 && code !== 229) return;
 
 						// Re-format the textarea.
 						$this.val($this.val());
